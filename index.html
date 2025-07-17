@@ -1,0 +1,1493 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyNews - Yangiliklar portali</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .news-card {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+        
+        .news-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+        
+        .news-card:active {
+            transform: translateY(-4px) scale(1.01);
+        }
+        
+        .cookie-popup {
+            animation: slideUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        @keyframes slideUp {
+            from {
+                transform: translateY(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+        
+        .slide-in-left {
+            animation: slideInLeft 0.6s ease-out;
+        }
+        
+        .slide-in-right {
+            animation: slideInRight 0.6s ease-out;
+        }
+        
+        .loading-skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+        
+        @keyframes loading {
+            0% {
+                background-position: 200% 0;
+            }
+            100% {
+                background-position: -200% 0;
+            }
+        }
+        
+        .modal-overlay {
+            backdrop-filter: blur(8px);
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        .modal-content {
+            animation: modalSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(50px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        .weather-card, .currency-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: all 0.3s ease;
+        }
+        
+        .weather-card:hover, .currency-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        
+        @media (max-width: 768px) {
+            .news-card:hover {
+                transform: translateY(-4px) scale(1.01);
+            }
+            
+            .modal-content {
+                margin: 1rem;
+                max-height: calc(100vh - 2rem);
+            }
+        }
+        
+        .back-button {
+            transition: all 0.3s ease;
+        }
+        
+        .back-button:hover {
+            transform: translateX(-4px);
+        }
+        
+        .nav-tab {
+            transition: all 0.3s ease;
+        }
+        
+        .nav-tab:hover {
+            background-color: rgba(59, 130, 246, 0.1);
+        }
+        
+        .nav-tab.active {
+            color: #2563eb;
+        }
+        
+        .lenta-card {
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+        }
+        
+        .lenta-card:hover {
+            border-left-color: #3b82f6;
+            transform: translateX(4px);
+        }
+        
+        .dark-mode {
+            background-color: #111827 !important;
+            color: #f9fafb !important;
+        }
+        
+        .dark-mode .bg-gray-50 {
+            background-color: #111827 !important;
+        }
+        
+        .dark-mode .bg-white {
+            background-color: #1f2937 !important;
+            color: #f9fafb !important;
+        }
+        
+        .dark-mode .text-gray-900 {
+            color: #f9fafb !important;
+        }
+        
+        .dark-mode .text-gray-600 {
+            color: #d1d5db !important;
+        }
+        
+        .dark-mode .text-gray-500 {
+            color: #9ca3af !important;
+        }
+
+        .dark-mode .text-gray-700 {
+            color: #d1d5db !important;
+        }
+
+        .dark-mode .text-blue-600 {
+            color: #f9fafb !important;
+        }
+        
+
+        .dark-mode .bg-gray-100 {
+            background-color: #1f2937 !important;
+        }
+        
+        .dark-mode .border-gray-200 {
+            border-color: #374151 !important;
+        }
+        
+        .dark-mode .border-gray-100 {
+            border-color: #374151 !important;
+        }
+        
+        .dark-mode .shadow-sm {
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.3) !important;
+        }
+        
+        .dark-mode .shadow-lg {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3) !important;
+        }
+        
+        .dark-mode .bg-gray-100 {
+            background-color: #374151 !important;
+            color: #f9fafb !important;
+        }
+
+        .dark-mode .bg-blue-50 {
+            background-color: #1e3a8a !important;
+        }
+        
+        .dark-mode .hover\\:bg-gray-50:hover {
+            background-color: #374151 !important;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-14 sm:h-16 gap-4">
+                <div class="flex items-center min-w-0">
+                    <h1 class="text-xl sm:text-2xl font-bold text-blue-600 cursor-pointer truncate" onclick="goHome()">MyNews</h1>
+                    <span class="ml-2 text-xs sm:text-sm text-gray-500 hidden sm:inline">Yangiliklar portali</span>
+                </div>
+                
+                <!-- Search Bar -->
+                <div class="flex-1 max-w-md mx-4 relative">
+                    <div class="relative">
+                        <input type="text" id="searchInput" placeholder="Yangiliklar qidirish..." 
+                               class="w-full pl-10 pr-4 py-2 bg-gray-100 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex items-center gap-3">
+                    <!-- Language Selector -->
+                    <div class="relative">
+                        <select id="languageSelect" class="appearance-none bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-pointer">
+                            <option value="uz">O'zbekcha</option>
+                            <option value="kr">Ўзбекча</option>
+                            <option value="ru">Русский</option>
+                            <option value="en">English</option>
+                        </select>
+                    </div>
+                    
+                    <div class="text-xs sm:text-sm text-gray-500 flex-shrink-0 hidden sm:block" id="currentDate"></div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main id="main" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-20" id="mainContent">
+        <!-- Home Page Content -->
+        <div id="homePage">
+            <!-- Top News Section -->
+            <section class="mb-12 fade-in">
+                <div class="flex items-center mb-6">
+                    <h2 class="text-3xl font-bold text-gray-900">Dolzarb habarlar</h2>
+                    <div class="ml-4 h-1 bg-gradient-to-r from-blue-500 to-purple-500 flex-1 max-w-32 rounded"></div>
+                </div>
+                <div id="topNews" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Loading skeletons will be inserted here -->
+                </div>
+            </section>
+
+            <!-- Latest News Section -->
+            <section class="mb-12 fade-in">
+                <div class="flex items-center mb-6">
+                    <h2 class="text-3xl font-bold text-gray-900">So'nggi yangiliklar</h2>
+                    <div class="ml-4 h-1 bg-gradient-to-r from-green-500 to-blue-500 flex-1 max-w-32 rounded"></div>
+                </div>
+                <div id="latestNews" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Loading skeletons will be inserted here -->
+                </div>
+                <div class="text-center mt-8">
+                    <button onclick="showPage('lenta')" class="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-lg font-medium transition-colors">
+                        Ko'proq yangiliklar
+                    </button>
+                </div>
+            </section>
+
+            <!-- Additional Info Section -->
+            <section class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+                <!-- Dollar Exchange Rate -->
+                <div class="currency-card text-white rounded-2xl p-8 slide-in-left">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-2xl font-bold">💱 Dollar kursi</h3>
+                        <div class="text-sm opacity-75" id="currencyDate"></div>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center bg-white bg-opacity-20 rounded-lg p-4">
+                            <span class="font-medium">USD/UZS</span>
+                            <div class="text-right">
+                                <div class="text-2xl font-bold" id="usdRate">12,350</div>
+                                <div class="text-sm opacity-75">so'm</div>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center bg-white bg-opacity-20 rounded-lg p-4">
+                            <span class="font-medium">EUR/UZS</span>
+                            <div class="text-right">
+                                <div class="text-2xl font-bold" id="eurRate">13,420</div>
+                                <div class="text-sm opacity-75">so'm</div>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center bg-white bg-opacity-20 rounded-lg p-4">
+                            <span class="font-medium">RUB/UZS</span>
+                            <div class="text-right">
+                                <div class="text-2xl font-bold" id="rubRate">135</div>
+                                <div class="text-sm opacity-75">so'm</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Weather -->
+                <div class="weather-card text-white rounded-2xl p-8 slide-in-right">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-2xl font-bold">🌤️ Ob-havo</h3>
+                        <div class="text-sm opacity-75" id="weatherLocation">Toshkent</div>
+                    </div>
+                    <div class="text-center mb-6">
+                        <div class="text-6xl mb-2" id="weatherIcon">☀️</div>
+                        <div class="text-4xl font-bold mb-2" id="temperature">+18°C</div>
+                        <div class="text-lg opacity-75" id="weatherDescription">Quyoshli</div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-white bg-opacity-20 rounded-lg p-3 text-center">
+                            <div class="text-sm opacity-75">Namlik</div>
+                            <div class="text-xl font-bold" id="humidity">65%</div>
+                        </div>
+                        <div class="bg-white bg-opacity-20 rounded-lg p-3 text-center">
+                            <div class="text-sm opacity-75">Shamol</div>
+                            <div class="text-xl font-bold" id="windSpeed">12 km/h</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Lenta Page -->
+        <div id="lentaPage" class="hidden">
+            <div class="flex items-center mb-6">
+                <h2 class="text-3xl font-bold text-gray-900">📰 Lenta</h2>
+                <div class="ml-4 h-1 bg-gradient-to-r from-red-500 to-pink-500 flex-1 max-w-32 rounded"></div>
+            </div>
+            <div id="lentaNews" class="space-y-6">
+                <!-- Lenta news will be inserted here -->
+            </div>
+            <div id="loadMoreContainer" class="text-center mt-8">
+                <button id="loadMoreBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-medium transition-colors">
+                    Ko'proq yuklash
+                </button>
+            </div>
+            <div id="lentaLoading" class="text-center mt-8 hidden">
+                <div class="inline-flex items-center px-4 py-2 font-semibold leading-6 text-sm shadow rounded-md text-blue-500 bg-white">
+                    <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Yuklanmoqda...
+                </div>
+            </div>
+        </div>
+
+        <!-- Sozlamalar Page -->
+        <div id="sozlamalarPage" class="hidden">
+            <div class="flex items-center mb-6">
+                <h2 class="text-3xl font-bold text-gray-900">⚙️ Sozlamalar</h2>
+                <div class="ml-4 h-1 bg-gradient-to-r from-purple-500 to-indigo-500 flex-1 max-w-32 rounded"></div>
+            </div>
+            
+            <div class="space-y-6">
+                <!-- Language Settings -->
+                <div class="bg-white rounded-xl p-6 shadow-sm">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">🌐 Til sozlamalari</h3>
+                    <div class="space-y-3">
+                        <label class="flex items-center">
+                            <input type="radio" name="language" value="uz" checked class="mr-3 text-blue-600">
+                            <span>O'zbekcha</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="radio" name="language" value="kr" class="mr-3 text-blue-600">
+                            <span>Ўзбекча</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="radio" name="language" value="ru" class="mr-3 text-blue-600">
+                            <span>Русский</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="radio" name="language" value="en" class="mr-3 text-blue-600">
+                            <span>English</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Theme Settings -->
+                <div class="bg-white rounded-xl p-6 shadow-sm">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">🎨 Dizayn sozlamalari</h3>
+                    <div class="flex items-center justify-between">
+                        <span>Tungi rejim</span>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="darkModeToggle" class="sr-only peer">
+                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Contact and About -->
+                <div class="bg-white rounded-xl p-6 shadow-sm">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">📞 Aloqa</h3>
+                    <div class="space-y-3">
+                        <button onclick="openContact()" class="w-full text-left p-3 hover:bg-gray-50 rounded-lg transition-colors flex items-center">
+                            <span class="mr-3">📧</span>
+                            <span>Murojat yo'llash</span>
+                            <span class="ml-auto">→</span>
+                        </button>
+                        <button onclick="openAbout()" class="w-full text-left p-3 hover:bg-gray-50 rounded-lg transition-colors flex items-center">
+                            <span class="mr-3">ℹ️</span>
+                            <span>Sayt haqida</span>
+                            <span class="ml-auto">→</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search Results Page -->
+        <div id="searchResultsPage" class="hidden fade-in">
+            <div class="flex items-center mb-6">
+                <button onclick="goHome()" class="back-button flex items-center text-blue-600 hover:text-blue-800 mr-4 font-medium">
+                    ← Orqaga
+                </button>
+                <h2 class="text-3xl font-bold text-gray-900">🔍 Qidiruv natijalari</h2>
+                <div class="ml-4 h-1 bg-gradient-to-r from-blue-500 to-purple-500 flex-1 max-w-32 rounded"></div>
+            </div>
+            <div id="searchQuery" class="mb-6 text-lg text-gray-600 bg-blue-50 p-4 rounded-lg"></div>
+            <div id="searchResults" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Search results will be inserted here -->
+            </div>
+            <div id="noResults" class="text-center py-16 hidden">
+                <div class="text-8xl mb-6">🔍</div>
+                <h3 class="text-2xl font-semibold text-gray-900 mb-3">Hech narsa topilmadi</h3>
+                <p class="text-gray-600 text-lg">Boshqa kalit so'zlar bilan qidirib ko'ring</p>
+                <button onclick="goHome()" class="mt-6 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
+                    Bosh sahifaga qaytish
+                </button>
+            </div>
+        </div>
+
+        <!-- News Detail Page -->
+        <div id="newsDetailPage" class="hidden">
+            <button onclick="goHome()" class="back-button flex items-center text-blue-600 hover:text-blue-800 mb-6 font-medium">
+                ← Orqaga qaytish
+            </button>
+            
+            <article class="bg-white rounded-2xl shadow-lg overflow-hidden mb-8">
+                <img id="newsDetailImage" src="" alt="" class="w-full h-64 md:h-96 object-cover">
+                <div class="p-6 md:p-8">
+                    <div class="flex items-center text-sm text-gray-500 mb-4">
+                        <span id="newsDetailDate"></span>
+                        <span class="mx-2">•</span>
+                        <span id="newsDetailViews"></span>
+                    </div>
+                    <h1 id="newsDetailTitle" class="text-3xl md:text-4xl font-bold text-gray-900 mb-6 leading-tight"></h1>
+                    <div id="newsDetailContent" class="prose prose-lg max-w-none text-gray-700 leading-relaxed"></div>
+                </div>
+            </article>
+
+            <!-- Recommendations -->
+            <section class="fade-in">
+                <h3 class="text-2xl font-bold text-gray-900 mb-6">Tavsiya etiladigan yangiliklar</h3>
+                <div id="recommendedNews" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Recommended news will be inserted here -->
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-50">
+        <div class="flex justify-around items-center h-16">
+            <button onclick="showPage('home')" id="homeTab" class="nav-tab flex flex-col items-center justify-center flex-1 py-2 text-blue-600">
+                <span class="text-xl mb-1">🏠</span>
+                <span class="text-xs font-medium">Bosh sahifa</span>
+            </button>
+            <button onclick="showPage('lenta')" id="lentaTab" class="nav-tab flex flex-col items-center justify-center flex-1 py-2 text-gray-500">
+                <span class="text-xl mb-1">📰</span>
+                <span class="text-xs font-medium">Lenta</span>
+            </button>
+            <button onclick="showPage('sozlamalar')" id="sozlamalarTab" class="nav-tab flex flex-col items-center justify-center flex-1 py-2 text-gray-500">
+                <span class="text-xl mb-1">⚙️</span>
+                <span class="text-xs font-medium">Sozlamalar</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Cookie Popup -->
+    <div id="cookiePopup" class="fixed bottom-16 left-0 right-0 bg-white border-t border-gray-200 shadow-lg p-4 cookie-popup hidden z-40">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between">
+            <div class="mb-4 sm:mb-0">
+                <p class="text-gray-700">
+                    <span class="font-medium">🍪 Cookie-lardan foydalanish</span><br>
+                    <span class="text-sm">Saytimizdan foydalanishni yaxshilash uchun cookie-lardan foydalanamiz.</span>
+                </p>
+            </div>
+            <div class="flex space-x-3">
+                <button id="acceptCookies" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-colors">
+                    Qabul qilish
+                </button>
+                <button id="declineCookies" class="bg-gray-300 hover:bg-gray-400 text-gray-700 px-6 py-2 rounded-lg font-medium transition-colors">
+                    Rad etish
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const ServerAPI = 'https://my_news.uz'
+        // Sample news data (simulating API response)
+
+        const main = document.getElementById('main')
+
+        const routes = {
+            '/': () => showPage('home'),
+            '/lenta': () => showPage('lenta'),
+            '/settings': () => showPage('sozlamalar')
+        }
+
+        const sampleNewsData = [
+            {
+                id: 1,
+                title: "O'zbekistonda yangi texnologik markazlar ochilmoqda",
+                content: "O'zbekiston hukumati mamlakatda yangi texnologik markazlar ochish bo'yicha keng ko'lamli dastur e'lon qildi. Bu markazlar yoshlar uchun zamonaviy ta'lim va ish o'rinlari yaratishga qaratilgan. Dastur doirasida 2024 yil davomida 50 dan ortiq yangi markaz ochilishi rejalashtirilgan.\n\nYangi texnologik markazlar sun'iy intellekt, robotexnika, dasturlash va raqamli marketing kabi zamonaviy yo'nalishlarda ta'lim beradi. Har bir markaz eng so'nggi texnologiyalar bilan jihozlanadi va tajribali mutaxassislar tomonidan boshqariladi.\n\nBu tashabbus yoshlarning texnologik ko'nikmalarini rivojlantirish va ularni zamonaviy ish bozorida raqobatbardosh qilish maqsadida amalga oshirilmoqda. Markazlarda o'qish bepul bo'lib, eng iqtidorli talabalar uchun stipendiya dasturlari ham mavjud.",
+                image: "https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=800&h=400&fit=crop",
+                views: 1250,
+                date: "2025-07-16T10:30:00Z",
+                isTop: true
+            },
+            {
+                id: 2,
+                title: "Toshkentda metro tizimi kengaytiriladi",
+                content: "Poytaxt metropoliteniga yangi yo'nalishlar qo'shilishi e'lon qilindi. Yangi loyiha bo'yicha 2025 yilgacha 3 ta yangi metro liniyasi qurilishi va 25 ta yangi stansiya ochilishi kutilmoqda. Bu shahar aholisining transport muammolarini hal qilishga yordam beradi.\n\nYangi metro liniyalari shaharning eng zich joylashgan hududlarini bog'laydi va kunlik yo'lovchilar sonini sezilarli darajada oshiradi. Loyiha doirasida zamonaviy vagonlar va stansiyalar quriladi.\n\nMetro tizimining kengayishi Toshkent aholisining hayot sifatini yaxshilash va shahar trafigini kamaytirish maqsadida amalga oshirilmoqda.",
+                image: "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=800&h=400&fit=crop",
+                views: 890,
+                date: "2024-01-14T15:45:00Z",
+                isTop: true
+            },
+            {
+                id: 3,
+                title: "Qishloq xo'jaligida yangi usullar joriy etilmoqda",
+                content: "O'zbekiston fermerlariga zamonaviy qishloq xo'jaligi texnologiyalarini o'rgatish dasturi boshlandi. Dastur doirasida sun'iy intellekt va IoT texnologiyalaridan foydalangan holda ekin yetishtirish usullari o'rgatiladi.\n\nYangi texnologiyalar orqali fermerlar o'z dalalarining holatini real vaqtda kuzatib borishi, suv va o'g'it sarfini optimallashtirishi mumkin. Bu esa hosildorlikni oshirish va xarajatlarni kamaytirishga yordam beradi.\n\nDastur barcha viloyatlarda bosqichma-bosqich amalga oshiriladi va minglab fermerlarni qamrab oladi.",
+                image: "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=800&h=400&fit=crop",
+                views: 654,
+                date: "2024-01-14T09:20:00Z",
+                isTop: true
+            },
+            {
+                id: 4,
+                title: "Ta'lim sohasida raqamlashtirish jarayoni",
+                content: "Barcha maktab va oliy ta'lim muassasalarida raqamli ta'lim platformalari joriy etilmoqda. Bu o'quvchi va talabalarning bilim sifatini oshirishga, shuningdek, masofaviy ta'lim imkoniyatlarini kengaytirishga yordam beradi.\n\nRaqamli platformalar interaktiv darslar, onlayn testlar va virtual laboratoriyalarni o'z ichiga oladi. O'qituvchilar ham zamonaviy pedagogik texnologiyalar bo'yicha o'qitilmoqda.\n\nBu tizim pandemiya davrida o'z samaradorligini ko'rsatdi va endi doimiy ravishda qo'llanilmoqda.",
+                image: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=800&h=400&fit=crop",
+                views: 432,
+                date: "2024-01-13T14:10:00Z",
+                isTop: false
+            },
+            {
+                id: 5,
+                title: "Ekologik loyihalar kengaytirilmoqda",
+                content: "Mamlakatda atrof-muhitni muhofaza qilish bo'yicha yangi loyihalar ishga tushirildi. Jumladan, qayta tiklanadigan energiya manbalari, chiqindilarni qayta ishlash zavodlari va yashil maydonlarni ko'paytirish dasturlari amalga oshirilmoqda.\n\nQuyosh va shamol energiyasi stansiyalari qurilishi tezlashtirildi. Chiqindilarni qayta ishlash zavodlari shaharlarni tozalash va ekologik holatni yaxshilashga yordam bermoqda.\n\nYashillashtirish dasturi doirasida har yili millionlab daraxt ekilmoqda.",
+                image: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&h=400&fit=crop",
+                views: 789,
+                date: "2024-01-13T11:30:00Z",
+                isTop: false
+            },
+            {
+                id: 6,
+                title: "Sport sohasida yangi yutuqlar",
+                content: "O'zbek sportchilari xalqaro musobaqalarda yangi yutuqlarga erishmoqda. Yaqinda bo'lib o'tgan jahon chempionatida mamlakatimiz vakillari bir nechta medal qo'lga kiritdi. Bu natijalar sport sohasidagi investitsiyalar samaradorligini ko'rsatadi.\n\nYangi sport majmualari qurilishi va trenerlarga ta'lim berish dasturlari o'z samarasini bermoqda. Yoshlar sport maktablari ham kengaytirilmoqda.\n\n2024 yilda O'zbekiston sportchilari Olimpiya o'yinlarida yangi yutuqlar qo'lga kiritishi kutilmoqda.",
+                image: "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=800&h=400&fit=crop",
+                views: 567,
+                date: "2024-01-12T16:45:00Z",
+                isTop: false
+            },
+            {
+                id: 7,
+                title: "Turizm sohasi rivojlanmoqda",
+                content: "O'zbekistonda turizm infratuzilmasi yangilanmoqda. Yangi mehmonxonalar, muzeylar va sayohat yo'nalishlari ochilmoqda. Bu mamlakatga keluvchi sayyohlar sonini oshirishga yordam beradi.",
+                image: "https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=800&h=400&fit=crop",
+                views: 345,
+                date: "2024-01-11T13:20:00Z",
+                isTop: false
+            },
+            {
+                id: 8,
+                title: "Sog'liqni saqlash tizimi modernizatsiyasi",
+                content: "Tibbiyot muassasalari zamonaviy asbob-uskunalar bilan jihozlanmoqda. Yangi shifoxonalar qurilishi va shifokorlarni qayta tayyorlash dasturlari amalga oshirilmoqda.",
+                image: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=800&h=400&fit=crop",
+                views: 678,
+                date: "2024-01-10T16:30:00Z",
+                isTop: false
+            }
+        ];
+
+        let currentNewsId = null;
+        let currentPage = 'home';
+        let lentaOffset = 0;
+        const lentaLimit = 5;
+        let isLoadingLenta = false;
+        let topNewsOffset = 3;
+        let latestNewsOffset = 3;
+
+        // Language translations
+        const translations = {
+            uz: {
+                title: "MyNews",
+                subtitle: "Yangiliklar portali",
+                topNews: "Dolzarb habarlar",
+                latestNews: "So'nggi yangiliklar",
+                lenta: "Lenta",
+                settings: "Sozlamalar",
+                home: "Bosh sahifa",
+                loadMore: "Ko'proq yangiliklar",
+                loading: "Yuklanmoqda...",
+                views: "ko'rishlar",
+                today: "Bugun",
+                yesterday: "Kecha",
+                daysAgo: "kun oldin",
+                languageSettings: "Til sozlamalari",
+                designSettings: "Dizayn sozlamalari",
+                darkMode: "Tungi rejim",
+                contact: "Aloqa",
+                sendMessage: "Murojat yo'llash",
+                aboutSite: "Sayt haqida",
+                backToHome: "Orqaga qaytish",
+                recommended: "Tavsiya etiladigan yangiliklar",
+                currency: "Dollar kursi",
+                weather: "Ob-havo",
+                humidity: "Namlik",
+                wind: "Shamol",
+                searchPlaceholder: "Yangiliklar qidirish...",
+                searchResults: "Qidiruv natijalari",
+                searchFor: "uchun qidiruv natijalari",
+                noResults: "Hech narsa topilmadi",
+                tryOtherKeywords: "Boshqa kalit so'zlar bilan qidirib ko'ring",
+                back: "Orqaga"
+            },
+            kr: {
+                title: "MyNews",
+                subtitle: "Янгиликлар портали",
+                topNews: "Долзарб хабарлар",
+                latestNews: "Сўнгги янгиликлар",
+                lenta: "Лента",
+                settings: "Созламалар",
+                home: "Бош саҳифа",
+                loadMore: "Кўпроқ янгиликлар",
+                loading: "Юкланмоқда...",
+                views: "кўришлар",
+                today: "Бугун",
+                yesterday: "Кеча",
+                daysAgo: "кун олдин",
+                languageSettings: "Тил созламалари",
+                designSettings: "Дизайн созламалари",
+                darkMode: "Тунги режим",
+                contact: "Алоқа",
+                sendMessage: "Мурожаат йўллаш",
+                aboutSite: "Сайт ҳақида",
+                backToHome: "Ортга қайтиш",
+                recommended: "Тавсия этиладиган янгиликлар",
+                currency: "Доллар курси",
+                weather: "Об-ҳаво",
+                humidity: "Намлик",
+                wind: "Шамол",
+                searchPlaceholder: "Янгиликлар қидириш...",
+                searchResults: "Қидирув натижалари",
+                searchFor: "учун қидирув натижалари",
+                noResults: "Ҳеч нарса топилмади",
+                tryOtherKeywords: "Бошқа калит сўзлар билан қидириб кўринг",
+                back: "Ортга"
+            },
+            ru: {
+                title: "MyNews",
+                subtitle: "Новостной портал",
+                topNews: "Актуальные новости",
+                latestNews: "Последние новости",
+                lenta: "Лента",
+                settings: "Настройки",
+                home: "Главная",
+                loadMore: "Больше новостей",
+                loading: "Загрузка...",
+                views: "просмотров",
+                today: "Сегодня",
+                yesterday: "Вчера",
+                daysAgo: "дней назад",
+                languageSettings: "Языковые настройки",
+                designSettings: "Настройки дизайна",
+                darkMode: "Темный режим",
+                contact: "Контакты",
+                sendMessage: "Отправить сообщение",
+                aboutSite: "О сайте",
+                backToHome: "Вернуться назад",
+                recommended: "Рекомендуемые новости",
+                currency: "Курс доллара",
+                weather: "Погода",
+                humidity: "Влажность",
+                wind: "Ветер",
+                searchPlaceholder: "Поиск новостей...",
+                searchResults: "Результаты поиска",
+                searchFor: "результаты поиска для",
+                noResults: "Ничего не найдено",
+                tryOtherKeywords: "Попробуйте другие ключевые слова",
+                back: "Назад"
+            },
+            en: {
+                title: "MyNews",
+                subtitle: "News Portal",
+                topNews: "Top News",
+                latestNews: "Latest News",
+                lenta: "Feed",
+                settings: "Settings",
+                home: "Home",
+                loadMore: "Load More News",
+                loading: "Loading...",
+                views: "views",
+                today: "Today",
+                yesterday: "Yesterday",
+                daysAgo: "days ago",
+                languageSettings: "Language Settings",
+                designSettings: "Design Settings",
+                darkMode: "Dark Mode",
+                contact: "Contact",
+                sendMessage: "Send Message",
+                aboutSite: "About Site",
+                backToHome: "Go Back",
+                recommended: "Recommended News",
+                currency: "Dollar Rate",
+                weather: "Weather",
+                humidity: "Humidity",
+                wind: "Wind",
+                searchPlaceholder: "Search news...",
+                searchResults: "Search Results",
+                searchFor: "search results for",
+                noResults: "Nothing found",
+                tryOtherKeywords: "Try other keywords",
+                back: "Back"
+            }
+        };
+
+        let currentLanguage = 'uz';
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            displayCurrentDate();
+            showCookiePopup();
+            loadNews();
+            setupCookieHandlers();
+            loadCurrencyData();
+            loadWeatherData();
+            setupSettings();
+            loadSavedSettings();
+            setupInfiniteScroll();
+            setupSearch();
+        });
+
+        // Display current date
+        function displayCurrentDate() {
+            const now = new Date();
+            const options = { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                weekday: 'long'
+            };
+            document.getElementById('currentDate').textContent = now.toLocaleDateString('uz-UZ', options);
+        }
+
+        // Show cookie popup if not already accepted
+        function showCookiePopup() {
+            const cookieAccepted = localStorage.getItem('cookiesAccepted');
+            if (!cookieAccepted) {
+                setTimeout(() => {
+                    document.getElementById('cookiePopup').classList.remove('hidden');
+                }, 1000);
+            }
+        }
+
+        // Setup cookie handlers
+        function setupCookieHandlers() {
+            document.getElementById('acceptCookies').addEventListener('click', function() {
+                localStorage.setItem('cookiesAccepted', 'true');
+                document.getElementById('cookiePopup').classList.add('hidden');
+            });
+
+            document.getElementById('declineCookies').addEventListener('click', function() {
+                localStorage.setItem('cookiesAccepted', 'false');
+                document.getElementById('cookiePopup').classList.add('hidden');
+            });
+        }
+
+        // Load currency data
+        function loadCurrencyData() {
+            // Simulate API call for currency rates
+            // In real app: fetch from currency API
+            const now = new Date();
+            document.getElementById('currencyDate').textContent = now.toLocaleDateString('uz-UZ');
+            
+            // Simulate real-time updates
+            setInterval(() => {
+                const usdRate = 12350 + Math.floor(Math.random() * 100) - 50;
+                const eurRate = 13420 + Math.floor(Math.random() * 100) - 50;
+                const rubRate = 135 + Math.floor(Math.random() * 10) - 5;
+                
+                document.getElementById('usdRate').textContent = usdRate.toLocaleString();
+                document.getElementById('eurRate').textContent = eurRate.toLocaleString();
+                document.getElementById('rubRate').textContent = rubRate.toLocaleString();
+            }, 30000); // Update every 30 seconds
+        }
+
+        // Load weather data
+        function loadWeatherData() {
+            // Simulate API call for weather data
+            // In real app: fetch from weather API
+            const weatherConditions = [
+                { icon: '☀️', temp: '+18', desc: 'Quyoshli' },
+                { icon: '⛅', temp: '+15', desc: 'Qisman bulutli' },
+                { icon: '🌧️', temp: '+12', desc: 'Yomg\'irli' },
+                { icon: '❄️', temp: '-2', desc: 'Qorli' }
+            ];
+            
+            const current = weatherConditions[0]; // Default sunny
+            document.getElementById('weatherIcon').textContent = current.icon;
+            document.getElementById('temperature').textContent = current.temp + '°C';
+            document.getElementById('weatherDescription').textContent = current.desc;
+            document.getElementById('humidity').textContent = '65%';
+            document.getElementById('windSpeed').textContent = '12 km/h';
+        }
+
+        // Create loading skeleton
+        function createLoadingSkeleton() {
+            return `
+                <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                    <div class="loading-skeleton h-48 w-full"></div>
+                    <div class="p-6">
+                        <div class="loading-skeleton h-6 w-3/4 mb-3 rounded"></div>
+                        <div class="loading-skeleton h-4 w-full mb-2 rounded"></div>
+                        <div class="loading-skeleton h-4 w-2/3 mb-4 rounded"></div>
+                        <div class="flex justify-between items-center">
+                            <div class="loading-skeleton h-4 w-20 rounded"></div>
+                            <div class="loading-skeleton h-4 w-24 rounded"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Load news data
+        async function loadNews() {
+            // Show loading skeletons
+            const topNewsContainer = document.getElementById('topNews');
+            const latestNewsContainer = document.getElementById('latestNews');
+            
+            topNewsContainer.innerHTML = Array(3).fill(createLoadingSkeleton()).join('');
+            latestNewsContainer.innerHTML = Array(3).fill(createLoadingSkeleton()).join('');
+
+            try {
+                // Simulate API call delay
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                
+                const newsData = sampleNewsData;
+                const topNews = newsData.filter(news => news.isTop);
+                const latestNews = newsData.filter(news => !news.isTop);
+                
+                displayNews(topNews, 'topNews');
+                displayNews(latestNews, 'latestNews');
+                
+            } catch (error) {
+                console.error('Error loading news:', error);
+                topNewsContainer.innerHTML = '<div class="col-span-full text-center text-red-500">Yangiliklar yuklanmadi. Iltimos, qayta urinib ko\'ring.</div>';
+                latestNewsContainer.innerHTML = '<div class="col-span-full text-center text-red-500">Yangiliklar yuklanmadi. Iltimos, qayta urinib ko\'ring.</div>';
+            }
+        }
+
+        // Display news items
+        function displayNews(newsArray, containerId) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = newsArray.map((news, index) => {
+                const delay = index * 100; // Stagger animation
+                return createNewsCard(news, delay);
+            }).join('');
+        }
+
+        // Create news card HTML
+        function createNewsCard(news, delay = 0) {
+            const preview = news.content.substring(0, 200) + (news.content.length > 200 ? '...' : '');
+            const formattedDate = formatDate(news.date);
+            const formattedViews = formatViews(news.views);
+
+            return `
+                <a href='news/5-tips-to-save-mone'>
+                    <article class="news-card bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100 fade-in" 
+                    style="animation-delay: ${delay}ms" onclick="openNews(${news.id})">
+                    <div class="relative overflow-hidden">
+                        <img src="${news.image}" alt="${news.title}" class="w-full h-48 object-cover transition-transform duration-300 hover:scale-110">
+                        <div class="absolute top-4 right-4 bg-black bg-opacity-50 text-white px-3 py-1 rounded-full text-xs font-medium">
+                            📰 Yangilik
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="font-semibold text-lg text-gray-900 mb-3 line-clamp-2 leading-tight hover:text-blue-600 transition-colors">
+                            ${news.title}
+                        </h3>
+                        <p class="text-gray-600 text-sm mb-4 line-clamp-3 leading-relaxed">
+                            ${preview}
+                        </p>
+                        <div class="flex justify-between items-center text-sm text-gray-500">
+                            <div class="flex items-center space-x-4">
+                                <span class="flex items-center bg-gray-100 px-2 py-1 rounded-full">
+                                    👁️ ${formattedViews}
+                                </span>
+                            </div>
+                            <span class="text-xs bg-blue-50 text-blue-600 px-2 py-1 rounded-full">
+                                📅 ${formattedDate}
+                            </span>
+                        </div>
+                    </div>
+                    </article>
+                </a>
+            `;
+        }
+
+        // Format date
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diffTime = Math.abs(now - date);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+            if (diffDays === 1) {
+                return 'Bugun';
+            } else if (diffDays === 2) {
+                return 'Kecha';
+            } else if (diffDays <= 7) {
+                return `${diffDays} kun oldin`;
+            } else {
+                return date.toLocaleDateString('uz-UZ', { 
+                    year: 'numeric', 
+                    month: 'short', 
+                    day: 'numeric' 
+                });
+            }
+        }
+
+        // Format view count
+        function formatViews(views) {
+            if (views >= 1000000) {
+                return (views / 1000000).toFixed(1) + 'M';
+            } else if (views >= 1000) {
+                return (views / 1000).toFixed(1) + 'K';
+            }
+            return views.toString();
+        }
+
+        // Open news article
+        async function openNews(newsId) {
+            try {
+                currentNewsId = newsId;
+                
+                // Increment view counter
+                const newsItem = sampleNewsData.find(news => news.id === newsId);
+                if (newsItem) {
+                    newsItem.views += 1;
+                }
+                
+                // Hide all pages first
+                document.getElementById('homePage').classList.add('hidden');
+                document.getElementById('lentaPage').classList.add('hidden');
+                document.getElementById('sozlamalarPage').classList.add('hidden');
+                document.getElementById('searchResultsPage').classList.add('hidden');
+                
+                // Show news detail page
+                document.getElementById('newsDetailPage').classList.remove('hidden');
+                
+                // Populate news details
+                document.getElementById('newsDetailImage').src = newsItem.image;
+                document.getElementById('newsDetailImage').alt = newsItem.title;
+                document.getElementById('newsDetailTitle').textContent = newsItem.title;
+                document.getElementById('newsDetailContent').innerHTML = newsItem.content.split('\n').map(p => `<p class="mb-4">${p}</p>`).join('');
+                document.getElementById('newsDetailDate').textContent = formatDate(newsItem.date);
+                document.getElementById('newsDetailViews').textContent = `${formatViews(newsItem.views)} ko'rishlar`;
+                
+                // Load recommendations
+                loadRecommendations(newsId);
+                
+                // Scroll to top
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                
+            } catch (error) {
+                console.error('Error opening news:', error);
+            }
+        }
+
+        // Load recommended news
+        function loadRecommendations(currentNewsId) {
+            const recommendations = sampleNewsData
+                .filter(news => news.id !== currentNewsId)
+                .slice(0, 3);
+            
+            const container = document.getElementById('recommendedNews');
+            container.innerHTML = recommendations.map((news, index) => {
+                const delay = index * 150;
+                return createNewsCard(news, delay);
+            }).join('');
+        }
+
+        // Show different pages
+        function showPage(page) {
+            // Hide all pages
+            document.getElementById('homePage').classList.add('hidden');
+            document.getElementById('lentaPage').classList.add('hidden');
+            document.getElementById('sozlamalarPage').classList.add('hidden');
+            document.getElementById('newsDetailPage').classList.add('hidden');
+            document.getElementById('searchResultsPage').classList.add('hidden');
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+                tab.classList.add('text-gray-500');
+                tab.classList.remove('text-blue-600');
+            });
+            
+            // Show selected page and activate tab
+            currentPage = page;
+            
+            if (page === 'home') {
+                document.getElementById('homePage').classList.remove('hidden');
+                document.getElementById('homeTab').classList.add('active', 'text-blue-600');
+                document.getElementById('homeTab').classList.remove('text-gray-500');
+            } else if (page === 'lenta') {
+                document.getElementById('lentaPage').classList.remove('hidden');
+                document.getElementById('lentaTab').classList.add('active', 'text-blue-600');
+                document.getElementById('lentaTab').classList.remove('text-gray-500');
+                loadLentaNews();
+            } else if (page === 'sozlamalar') {
+                document.getElementById('sozlamalarPage').classList.remove('hidden');
+                document.getElementById('sozlamalarTab').classList.add('active', 'text-blue-600');
+                document.getElementById('sozlamalarTab').classList.remove('text-gray-500');
+            }
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Go back to home page
+        function goHome() {
+            showPage('home');
+            currentNewsId = null;
+            // Clear search input when going home
+            document.getElementById('searchInput').value = '';
+        }
+
+        // Handle browser back button
+        window.addEventListener('popstate', function(event) {
+            if (currentNewsId) {
+                goHome();
+            }
+        });
+
+        // Add to browser history when opening news
+        function updateHistory(newsId) {
+            if (newsId) {
+                history.pushState({ newsId: newsId }, '', `/news/${newsId}`);
+            } else {
+                history.pushState({}, '', '/');
+            }
+        }
+
+        // Handle responsive behavior
+        window.addEventListener('resize', function() {
+            // Adjust animations for mobile
+            const isMobile = window.innerWidth < 768;
+            const newsCards = document.querySelectorAll('.news-card');
+            
+            newsCards.forEach(card => {
+                if (isMobile) {
+                    card.style.transform = 'none';
+                }
+            });
+        });
+
+        // Intersection Observer for scroll animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Load Lenta news
+        function loadLentaNews(reset = false) {
+            if (reset) {
+                lentaOffset = 0;
+                document.getElementById('lentaNews').innerHTML = '';
+            }
+            
+            const startIndex = lentaOffset;
+            const endIndex = startIndex + lentaLimit;
+            const newsToShow = sampleNewsData.slice(startIndex, endIndex);
+            
+            const container = document.getElementById('lentaNews');
+            
+            newsToShow.forEach((news, index) => {
+                const delay = index * 100;
+                container.innerHTML += createLentaCard(news, delay);
+            });
+            
+            lentaOffset = endIndex;
+            
+            // Hide load more button if no more news
+            if (lentaOffset >= sampleNewsData.length) {
+                document.getElementById('loadMoreContainer').style.display = 'none';
+            } else {
+                document.getElementById('loadMoreContainer').style.display = 'block';
+            }
+        }
+
+        // Create Lenta card
+        function createLentaCard(news, delay = 0) {
+            const preview = news.content.substring(0, 150) + '...';
+            const formattedDate = formatDate(news.date);
+            const formattedViews = formatViews(news.views);
+
+            return `
+                <article class="lenta-card bg-white rounded-xl p-6 shadow-sm fade-in" 
+                         style="animation-delay: ${delay}ms" onclick="openNews(${news.id})">
+                    <div class="flex gap-4">
+                        <img src="${news.image}" alt="${news.title}" class="w-24 h-24 object-cover rounded-lg flex-shrink-0">
+                        <div class="flex-1 min-w-0">
+                            <h3 class="font-semibold text-lg text-gray-900 mb-2 line-clamp-2 hover:text-blue-600 transition-colors">
+                                ${news.title}
+                            </h3>
+                            <p class="text-gray-600 text-sm mb-3 line-clamp-2">
+                                ${preview}
+                            </p>
+                            <div class="flex justify-between items-center text-xs text-gray-500">
+                                <span class="flex items-center">
+                                    👁️ ${formattedViews}
+                                </span>
+                                <span>📅 ${formattedDate}</span>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+            `;
+        }
+
+        // Setup settings functionality
+        function setupSettings() {
+            // Dark mode toggle
+            document.getElementById('darkModeToggle').addEventListener('change', function() {
+                toggleDarkMode(this.checked);
+            });
+
+            // Language selection
+            document.querySelectorAll('input[name="language"]').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    changeLanguage(this.value);
+                });
+            });
+
+            // Header language selector
+            document.getElementById('languageSelect').addEventListener('change', function() {
+                changeLanguage(this.value);
+                // Update settings page radio button
+                document.querySelector(`input[name="language"][value="🌐${this.value}"]`).checked = true;
+            });
+
+            // Load more button
+            document.getElementById('loadMoreBtn').addEventListener('click', function() {
+                loadLentaNewsScroll();
+            });
+        }
+
+        // Toggle dark mode
+        function toggleDarkMode(isDark) {
+            if (isDark) {
+                document.body.classList.add('dark-mode');
+                localStorage.setItem('darkMode', 'true');
+            } else {
+                document.body.classList.remove('dark-mode');
+                localStorage.setItem('darkMode', 'false');
+            }
+        }
+
+        // Change language
+        function changeLanguage(lang) {
+            currentLanguage = lang;
+            localStorage.setItem('language', lang);
+            updateLanguage();
+        }
+
+        // Update language in UI
+        function updateLanguage() {
+            const t = translations[currentLanguage];
+            
+            // Update header
+            document.querySelector('h1').textContent = t.title;
+            document.querySelector('h1').nextElementSibling.textContent = t.subtitle;
+            
+            // Update search placeholder
+            document.getElementById('searchInput').placeholder = t.searchPlaceholder;
+            
+            // Update section titles
+            document.querySelector('#homePage h2').textContent = t.topNews;
+            document.querySelectorAll('#homePage h2')[1].textContent = t.latestNews;
+            document.querySelector('#lentaPage h2').textContent = `📰 ${t.lenta}`;
+            document.querySelector('#sozlamalarPage h2').textContent = `⚙️ ${t.settings}`;
+            document.querySelector('#searchResultsPage h2').textContent = `🔍 ${t.searchResults}`;
+            
+            // Update navigation
+            document.querySelector('#homeTab .text-xs').textContent = t.home;
+            document.querySelector('#lentaTab .text-xs').textContent = t.lenta;
+            document.querySelector('#sozlamalarTab .text-xs').textContent = t.settings;
+            
+            // Update buttons
+            document.querySelectorAll('button').forEach(btn => {
+                if (btn.textContent.includes('Ko\'proq yangiliklar') || btn.textContent.includes('Больше новостей') || btn.textContent.includes('Load More News')) {
+                    btn.textContent = t.loadMore;
+                }
+                if (btn.textContent.includes('Ko\'proq yuklash') || btn.textContent.includes('Загрузить еще') || btn.textContent.includes('Load More')) {
+                    btn.textContent = t.loadMore;
+                }
+                if (btn.textContent.includes('Orqaga') || btn.textContent.includes('Назад') || btn.textContent.includes('Back')) {
+                    btn.innerHTML = `← ${t.back}`;
+                }
+            });
+            
+            // Update search results page
+            const noResultsTitle = document.querySelector('#noResults h3');
+            const noResultsText = document.querySelector('#noResults p');
+            if (noResultsTitle) noResultsTitle.textContent = t.noResults;
+            if (noResultsText) noResultsText.textContent = t.tryOtherKeywords;
+            
+            // Update settings page
+            const settingsTexts = document.querySelectorAll('#sozlamalarPage h3');
+            if (settingsTexts[0]) settingsTexts[0].textContent = `🌐 ${t.languageSettings}`;
+            if (settingsTexts[1]) settingsTexts[1].textContent = `🎨 ${t.designSettings}`;
+            if (settingsTexts[2]) settingsTexts[2].textContent = `📞 ${t.contact}`;
+            
+            // Update dark mode label
+            const darkModeLabel = document.querySelector('#darkModeToggle').parentElement.previousElementSibling;
+            if (darkModeLabel) darkModeLabel.textContent = t.darkMode;
+            
+            // Update contact buttons
+            const contactButtons = document.querySelectorAll('#sozlamalarPage button span');
+            if (contactButtons[1]) contactButtons[1].textContent = t.sendMessage;
+            if (contactButtons[3]) contactButtons[3].textContent = t.aboutSite;
+            
+            // Update currency and weather titles
+            const currencyTitle = document.querySelector('.currency-card h3');
+            const weatherTitle = document.querySelector('.weather-card h3');
+            if (currencyTitle) currencyTitle.textContent = `💱 ${t.currency}`;
+            if (weatherTitle) weatherTitle.textContent = `🌤️ ${t.weather}`;
+        }
+
+        // Load more top news
+        function loadMoreTopNews() {
+            const moreNews = sampleNewsData.slice(topNewsOffset, topNewsOffset + 3);
+            if (moreNews.length > 0) {
+                const container = document.getElementById('topNews');
+                moreNews.forEach((news, index) => {
+                    const delay = index * 100;
+                    container.innerHTML += createNewsCard(news, delay);
+                });
+                topNewsOffset += 3;
+            }
+        }
+
+        // Load more latest news
+        function loadMoreLatestNews() {
+            const moreNews = sampleNewsData.slice(latestNewsOffset, latestNewsOffset + 3);
+            if (moreNews.length > 0) {
+                const container = document.getElementById('latestNews');
+                moreNews.forEach((news, index) => {
+                    const delay = index * 100;
+                    container.innerHTML += createNewsCard(news, delay);
+                });
+                latestNewsOffset += 3;
+            }
+        }
+
+        // Setup infinite scroll for Lenta
+        function setupInfiniteScroll() {
+            let isLoading = false;
+            
+            window.addEventListener('scroll', () => {
+                if (currentPage !== 'lenta' || isLoading) return;
+                
+                const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+                
+                if (scrollTop + clientHeight >= scrollHeight - 1000) {
+                    loadLentaNewsScroll();
+                }
+            });
+        }
+
+        // Load Lenta news on scroll
+        async function loadLentaNewsScroll() {
+            if (isLoadingLenta || lentaOffset >= sampleNewsData.length) return;
+            
+            isLoadingLenta = true;
+            document.getElementById('lentaLoading').classList.remove('hidden');
+            document.getElementById('loadMoreContainer').classList.add('hidden');
+            
+            // Simulate loading delay
+            await new Promise(resolve => setTimeout(resolve, 800));
+            
+            const startIndex = lentaOffset;
+            const endIndex = startIndex + lentaLimit;
+            const newsToShow = sampleNewsData.slice(startIndex, endIndex);
+            
+            const container = document.getElementById('lentaNews');
+            
+            newsToShow.forEach((news, index) => {
+                const delay = index * 100;
+                container.innerHTML += createLentaCard(news, delay);
+            });
+            
+            lentaOffset = endIndex;
+            
+            document.getElementById('lentaLoading').classList.add('hidden');
+            
+            // Show load more button if there are more news
+            if (lentaOffset < sampleNewsData.length) {
+                document.getElementById('loadMoreContainer').classList.remove('hidden');
+            }
+            
+            isLoadingLenta = false;
+        }
+
+        // Setup search functionality
+        function setupSearch() {
+            const searchInput = document.getElementById('searchInput');
+            
+            // Search on Enter key
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    performSearch(this.value.trim());
+                }
+            });
+            
+            // Search on input with debounce
+            let searchTimeout;
+            searchInput.addEventListener('input', function() {
+                clearTimeout(searchTimeout);
+                const query = this.value.trim();
+                
+                if (query.length >= 2) {
+                    searchTimeout = setTimeout(() => {
+                        performSearch(query);
+                    }, 500);
+                }
+            });
+        }
+
+        // Perform search
+        function performSearch(query) {
+            if (!query) return;
+            
+            // Show search results page
+            showSearchResults();
+            
+            // Update search query display
+            const t = translations[currentLanguage];
+            document.getElementById('searchQuery').textContent = `"${query}" ${t.searchFor}`;
+            
+            // Filter news based on query
+            const results = sampleNewsData.filter(news => 
+                news.title.toLowerCase().includes(query.toLowerCase()) ||
+                news.content.toLowerCase().includes(query.toLowerCase())
+            );
+            
+            displaySearchResults(results);
+        }
+
+        // Show search results page
+        function showSearchResults() {
+            // Hide all pages
+            document.getElementById('homePage').classList.add('hidden');
+            document.getElementById('lentaPage').classList.add('hidden');
+            document.getElementById('sozlamalarPage').classList.add('hidden');
+            document.getElementById('newsDetailPage').classList.add('hidden');
+            document.getElementById('searchResultsPage').classList.remove('hidden');
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+                tab.classList.add('text-gray-500');
+                tab.classList.remove('text-blue-600');
+            });
+            
+            currentPage = 'search';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Display search results
+        function displaySearchResults(results) {
+            const container = document.getElementById('searchResults');
+            const noResults = document.getElementById('noResults');
+            
+            if (results.length === 0) {
+                container.innerHTML = '';
+                noResults.classList.remove('hidden');
+            } else {
+                noResults.classList.add('hidden');
+                container.innerHTML = results.map((news, index) => {
+                    const delay = index * 100;
+                    return createNewsCard(news, delay);
+                }).join('');
+            }
+        }
+
+        // Load saved settings
+        function loadSavedSettings() {
+            // Load dark mode setting
+            const darkMode = localStorage.getItem('darkMode') === 'true';
+            document.getElementById('darkModeToggle').checked = darkMode;
+            toggleDarkMode(darkMode);
+
+            // Load language setting
+            const language = localStorage.getItem('language') || 'uz';
+            currentLanguage = language;
+            document.querySelector(`input[name="language"][value="${language}"]`).checked = true;
+            document.getElementById('languageSelect').value = language;
+            updateLanguage();
+        }
+
+        // Open contact modal
+        function openContact() {
+            alert('Murojat yo\'llash funksiyasi. Bu yerda contact form ochiladi.');
+        }
+
+        // Open about modal
+        function openAbout() {
+            alert('Sayt haqida ma\'lumot. Bu yerda sayt haqida batafsil ma\'lumot ko\'rsatiladi.');
+        }
+
+        // Observe elements for scroll animations
+        setTimeout(() => {
+            document.querySelectorAll('.fade-in, .slide-in-left, .slide-in-right').forEach(el => {
+                observer.observe(el);
+            });
+        }, 100);
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'95feeed842eb8b0c',t:'MTc1MjY0MTk5Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
