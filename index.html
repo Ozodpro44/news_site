@@ -559,6 +559,27 @@
             '/settings': () => showPage('sozlamalar')
         }
 
+        const path = window.location.pathname
+
+        if (path.startsWith('/news/') && path.length > 7) {
+            
+        } else if (routes[path]) {
+            routes[path]()
+        } else {
+            main.innerHTML = '<h1>Page not found</h1>'
+        }
+
+        window.onpopstate = () => {
+            const path = window.location.pathname
+            if (path.startsWith('/news/')) {
+                loadNewsSingle(slug)
+            } else if (routes[path]) {
+                routes[path]()
+            } else {
+                main.innerHTML = '<h1>404</h1>'
+            } 
+        }
+
         const sampleNewsData = [
             {
                 id: 1,
