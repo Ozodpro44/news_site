@@ -1,512 +1,39 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="uz">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MyNews - Yangiliklar portali</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-        
-        .news-card {
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            cursor: pointer;
-        }
-        
-        .news-card:hover {
-            transform: translateY(-8px) scale(1.02);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-        }
-        
-        .news-card:active {
-            transform: translateY(-4px) scale(1.01);
-        }
-        
-        .cookie-popup {
-            animation: slideUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        
-        @keyframes slideUp {
-            from {
-                transform: translateY(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-        
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        @keyframes slideInLeft {
-            from {
-                opacity: 0;
-                transform: translateX(-30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-        
-        @keyframes slideInRight {
-            from {
-                opacity: 0;
-                transform: translateX(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-        
-        .fade-in {
-            animation: fadeIn 0.6s ease-out;
-        }
-        
-        .slide-in-left {
-            animation: slideInLeft 0.6s ease-out;
-        }
-        
-        .slide-in-right {
-            animation: slideInRight 0.6s ease-out;
-        }
-        
-        .loading-skeleton {
-            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-            background-size: 200% 100%;
-            animation: loading 1.5s infinite;
-        }
-        
-        @keyframes loading {
-            0% {
-                background-position: 200% 0;
-            }
-            100% {
-                background-position: -200% 0;
-            }
-        }
-        
-        .modal-overlay {
-            backdrop-filter: blur(8px);
-            animation: fadeIn 0.3s ease-out;
-        }
-        
-        .modal-content {
-            animation: modalSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        
-        @keyframes modalSlideIn {
-            from {
-                opacity: 0;
-                transform: translateY(50px) scale(0.95);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
-        
-        .weather-card, .currency-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            transition: all 0.3s ease;
-        }
-        
-        .weather-card:hover, .currency-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-        }
-        
-        @media (max-width: 768px) {
-            .news-card:hover {
-                transform: translateY(-4px) scale(1.01);
-            }
-            
-            .modal-content {
-                margin: 1rem;
-                max-height: calc(100vh - 2rem);
-            }
-        }
-        
-        .back-button {
-            transition: all 0.3s ease;
-        }
-        
-        .back-button:hover {
-            transform: translateX(-4px);
-        }
-        
-        .nav-tab {
-            transition: all 0.3s ease;
-        }
-        
-        .nav-tab:hover {
-            background-color: rgba(59, 130, 246, 0.1);
-        }
-        
-        .nav-tab.active {
-            color: #2563eb;
-        }
-        
-        .lenta-card {
-            transition: all 0.3s ease;
-            border-left: 4px solid transparent;
-        }
-        
-        .lenta-card:hover {
-            border-left-color: #3b82f6;
-            transform: translateX(4px);
-        }
-        
-        .dark-mode {
-            background-color: #111827 !important;
-            color: #f9fafb !important;
-        }
-        
-        .dark-mode .bg-gray-50 {
-            background-color: #111827 !important;
-        }
-        
-        .dark-mode .bg-white {
-            background-color: #1f2937 !important;
-            color: #f9fafb !important;
-        }
-        
-        .dark-mode .text-gray-900 {
-            color: #f9fafb !important;
-        }
-        
-        .dark-mode .text-gray-600 {
-            color: #d1d5db !important;
-        }
-        
-        .dark-mode .text-gray-500 {
-            color: #9ca3af !important;
-        }
-
-        .dark-mode .text-gray-700 {
-            color: #d1d5db !important;
-        }
-
-        .dark-mode .text-blue-600 {
-            color: #f9fafb !important;
-        }
-        
-
-        .dark-mode .bg-gray-100 {
-            background-color: #1f2937 !important;
-        }
-        
-        .dark-mode .border-gray-200 {
-            border-color: #374151 !important;
-        }
-        
-        .dark-mode .border-gray-100 {
-            border-color: #374151 !important;
-        }
-        
-        .dark-mode .shadow-sm {
-            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.3) !important;
-        }
-        
-        .dark-mode .shadow-lg {
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3) !important;
-        }
-        
-        .dark-mode .bg-gray-100 {
-            background-color: #374151 !important;
-            color: #f9fafb !important;
-        }
-
-        .dark-mode .bg-blue-50 {
-            background-color: #1e3a8a !important;
-        }
-        
-        .dark-mode .hover\\:bg-gray-50:hover {
-            background-color: #374151 !important;
-        }
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
     <!-- Header -->
-    <header class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-14 sm:h-16 gap-4">
-                <div class="flex items-center min-w-0">
-                    <h1 class="text-xl sm:text-2xl font-bold text-blue-600 cursor-pointer truncate" onclick="goHome()">MyNews</h1>
-                    <span class="ml-2 text-xs sm:text-sm text-gray-500 hidden sm:inline">Yangiliklar portali</span>
-                </div>
-                
-                <!-- Search Bar -->
-                <div class="flex-1 max-w-md mx-4 relative">
-                    <div class="relative">
-                        <input type="text" id="searchInput" placeholder="Yangiliklar qidirish..." 
-                               class="w-full pl-10 pr-4 py-2 bg-gray-100 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                            </svg>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="flex items-center gap-3">
-                    <!-- Language Selector -->
-                    <div class="relative">
-                        <select id="languageSelect" class="appearance-none bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-pointer">
-                            <option value="uz">O'zbekcha</option>
-                            <option value="kr">Ўзбекча</option>
-                            <option value="ru">Русский</option>
-                            <option value="en">English</option>
-                        </select>
-                    </div>
-                    
-                    <div class="text-xs sm:text-sm text-gray-500 flex-shrink-0 hidden sm:block" id="currentDate"></div>
-                </div>
-            </div>
-        </div>
-    </header>
+    
 
     <!-- Main Content -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-20" id="mainContent">
+   <!-- <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-20" id="mainContent">
         <!-- Home Page Content -->
-        <div id="homePage">
-            <!-- Top News Section -->
-            <section class="mb-12 fade-in">
-                <div class="flex items-center mb-6">
-                    <h2 class="text-3xl font-bold text-gray-900">Dolzarb habarlar</h2>
-                    <div class="ml-4 h-1 bg-gradient-to-r from-blue-500 to-purple-500 flex-1 max-w-32 rounded"></div>
-                </div>
-                <div id="topNews" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <!-- Loading skeletons will be inserted here -->
-                </div>
-            </section>
-
-            <!-- Latest News Section -->
-            <section class="mb-12 fade-in">
-                <div class="flex items-center mb-6">
-                    <h2 class="text-3xl font-bold text-gray-900">So'nggi yangiliklar</h2>
-                    <div class="ml-4 h-1 bg-gradient-to-r from-green-500 to-blue-500 flex-1 max-w-32 rounded"></div>
-                </div>
-                <div id="latestNews" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <!-- Loading skeletons will be inserted here -->
-                </div>
-                <div class="text-center mt-8">
-                    <button onclick="showPage('lenta')" class="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-lg font-medium transition-colors">
-                        Ko'proq yangiliklar
-                    </button>
-                </div>
-            </section>
-
-            <!-- Additional Info Section -->
-            <section class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
-                <!-- Dollar Exchange Rate -->
-                <div class="currency-card text-white rounded-2xl p-8 slide-in-left">
-                    <div class="flex items-center justify-between mb-6">
-                        <h3 class="text-2xl font-bold">💱 Dollar kursi</h3>
-                        <div class="text-sm opacity-75" id="currencyDate"></div>
-                    </div>
-                    <div class="space-y-4">
-                        <div class="flex justify-between items-center bg-white bg-opacity-20 rounded-lg p-4">
-                            <span class="font-medium">USD/UZS</span>
-                            <div class="text-right">
-                                <div class="text-2xl font-bold" id="usdRate">12,350</div>
-                                <div class="text-sm opacity-75">so'm</div>
-                            </div>
-                        </div>
-                        <div class="flex justify-between items-center bg-white bg-opacity-20 rounded-lg p-4">
-                            <span class="font-medium">EUR/UZS</span>
-                            <div class="text-right">
-                                <div class="text-2xl font-bold" id="eurRate">13,420</div>
-                                <div class="text-sm opacity-75">so'm</div>
-                            </div>
-                        </div>
-                        <div class="flex justify-between items-center bg-white bg-opacity-20 rounded-lg p-4">
-                            <span class="font-medium">RUB/UZS</span>
-                            <div class="text-right">
-                                <div class="text-2xl font-bold" id="rubRate">135</div>
-                                <div class="text-sm opacity-75">so'm</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Weather -->
-                <div class="weather-card text-white rounded-2xl p-8 slide-in-right">
-                    <div class="flex items-center justify-between mb-6">
-                        <h3 class="text-2xl font-bold">🌤️ Ob-havo</h3>
-                        <div class="text-sm opacity-75" id="weatherLocation">Toshkent</div>
-                    </div>
-                    <div class="text-center mb-6">
-                        <div class="text-6xl mb-2" id="weatherIcon">☀️</div>
-                        <div class="text-4xl font-bold mb-2" id="temperature">+18°C</div>
-                        <div class="text-lg opacity-75" id="weatherDescription">Quyoshli</div>
-                    </div>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="bg-white bg-opacity-20 rounded-lg p-3 text-center">
-                            <div class="text-sm opacity-75">Namlik</div>
-                            <div class="text-xl font-bold" id="humidity">65%</div>
-                        </div>
-                        <div class="bg-white bg-opacity-20 rounded-lg p-3 text-center">
-                            <div class="text-sm opacity-75">Shamol</div>
-                            <div class="text-xl font-bold" id="windSpeed">12 km/h</div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </div>
+        
 
         <!-- Lenta Page -->
         
 
         <!-- Sozlamalar Page -->
-        <div id="sozlamalarPage" class="hidden">
-            <div class="flex items-center mb-6">
-                <h2 class="text-3xl font-bold text-gray-900">⚙️ Sozlamalar</h2>
-                <div class="ml-4 h-1 bg-gradient-to-r from-purple-500 to-indigo-500 flex-1 max-w-32 rounded"></div>
-            </div>
-            
-            <div class="space-y-6">
-                <!-- Language Settings -->
-                <div class="bg-white rounded-xl p-6 shadow-sm">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">🌐 Til sozlamalari</h3>
-                    <div class="space-y-3">
-                        <label class="flex items-center">
-                            <input type="radio" name="language" value="uz" checked class="mr-3 text-blue-600">
-                            <span>O'zbekcha</span>
-                        </label>
-                        <label class="flex items-center">
-                            <input type="radio" name="language" value="kr" class="mr-3 text-blue-600">
-                            <span>Ўзбекча</span>
-                        </label>
-                        <label class="flex items-center">
-                            <input type="radio" name="language" value="ru" class="mr-3 text-blue-600">
-                            <span>Русский</span>
-                        </label>
-                        <label class="flex items-center">
-                            <input type="radio" name="language" value="en" class="mr-3 text-blue-600">
-                            <span>English</span>
-                        </label>
-                    </div>
-                </div>
-
-                <!-- Theme Settings -->
-                <div class="bg-white rounded-xl p-6 shadow-sm">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">🎨 Dizayn sozlamalari</h3>
-                    <div class="flex items-center justify-between">
-                        <span>Tungi rejim</span>
-                        <label class="relative inline-flex items-center cursor-pointer">
-                            <input type="checkbox" id="darkModeToggle" class="sr-only peer">
-                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                        </label>
-                    </div>
-                </div>
-
-                <!-- Contact and About -->
-                <div class="bg-white rounded-xl p-6 shadow-sm">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">📞 Aloqa</h3>
-                    <div class="space-y-3">
-                        <button onclick="openContact()" class="w-full text-left p-3 hover:bg-gray-50 rounded-lg transition-colors flex items-center">
-                            <span class="mr-3">📧</span>
-                            <span>Murojat yo'llash</span>
-                            <span class="ml-auto">→</span>
-                        </button>
-                        <button onclick="openAbout()" class="w-full text-left p-3 hover:bg-gray-50 rounded-lg transition-colors flex items-center">
-                            <span class="mr-3">ℹ️</span>
-                            <span>Sayt haqida</span>
-                            <span class="ml-auto">→</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
+        
 
         <!-- Search Results Page -->
-        <div id="searchResultsPage" class="hidden fade-in">
-            <div class="flex items-center mb-6">
-                <button onclick="goHome()" class="back-button flex items-center text-blue-600 hover:text-blue-800 mr-4 font-medium">
-                    ← Orqaga
-                </button>
-                <h2 class="text-3xl font-bold text-gray-900">🔍 Qidiruv natijalari</h2>
-                <div class="ml-4 h-1 bg-gradient-to-r from-blue-500 to-purple-500 flex-1 max-w-32 rounded"></div>
-            </div>
-            <div id="searchQuery" class="mb-6 text-lg text-gray-600 bg-blue-50 p-4 rounded-lg"></div>
-            <div id="searchResults" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- Search results will be inserted here -->
-            </div>
-            <div id="noResults" class="text-center py-16 hidden">
-                <div class="text-8xl mb-6">🔍</div>
-                <h3 class="text-2xl font-semibold text-gray-900 mb-3">Hech narsa topilmadi</h3>
-                <p class="text-gray-600 text-lg">Boshqa kalit so'zlar bilan qidirib ko'ring</p>
-                <button onclick="goHome()" class="mt-6 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
-                    Bosh sahifaga qaytish
-                </button>
-            </div>
-        </div>
+       
 
         <!-- News Detail Page -->
-        <div id="newsDetailPage" class="hidden">
-            <button onclick="goHome()" class="back-button flex items-center text-blue-600 hover:text-blue-800 mb-6 font-medium">
-                ← Orqaga qaytish
-            </button>
-            
-            <article class="bg-white rounded-2xl shadow-lg overflow-hidden mb-8">
-                <img id="newsDetailImage" src="" alt="" class="w-full h-64 md:h-96 object-cover">
-                <div class="p-6 md:p-8">
-                    <div class="flex items-center text-sm text-gray-500 mb-4">
-                        <span id="newsDetailDate"></span>
-                        <span class="mx-2">•</span>
-                        <span id="newsDetailViews"></span>
-                    </div>
-                    <h1 id="newsDetailTitle" class="text-3xl md:text-4xl font-bold text-gray-900 mb-6 leading-tight"></h1>
-                    <div id="newsDetailContent" class="prose prose-lg max-w-none text-gray-700 leading-relaxed"></div>
-                </div>
-            </article>
-
-            <!-- Recommendations -->
-            <section class="fade-in">
-                <h3 class="text-2xl font-bold text-gray-900 mb-6">Tavsiya etiladigan yangiliklar</h3>
-                <div id="recommendedNews" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <!-- Recommended news will be inserted here -->
-                </div>
-            </section>
-        </div>
-    </div>
+        
+   <!-- </div>
 
     <!-- Bottom Navigation -->
-    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-50">
-        <div class="flex justify-around items-center h-16">
-            <button onclick="showPage('home')" id="homeTab" class="nav-tab flex flex-col items-center justify-center flex-1 py-2 text-blue-600">
-                <span class="text-xl mb-1">🏠</span>
-                <span class="text-xs font-medium">Bosh sahifa</span>
-            </button>
-            <button onclick="showPage('lenta')" id="lentaTab" class="nav-tab flex flex-col items-center justify-center flex-1 py-2 text-gray-500">
-                <span class="text-xl mb-1">📰</span>
-                <span class="text-xs font-medium">Lenta</span>
-            </button>
-            <button onclick="showPage('sozlamalar')" id="sozlamalarTab" class="nav-tab flex flex-col items-center justify-center flex-1 py-2 text-gray-500">
-                <span class="text-xl mb-1">⚙️</span>
-                <span class="text-xs font-medium">Sozlamalar</span>
-            </button>
-        </div>
-    </nav>
+    
 
     <!-- Cookie Popup -->
-    <div id="cookiePopup" class="fixed bottom-16 left-0 right-0 bg-white border-t border-gray-200 shadow-lg p-4 cookie-popup hidden z-40">
+  <!--  <div id="cookiePopup" class="fixed bottom-16 left-0 right-0 bg-white border-t border-gray-200 shadow-lg p-4 cookie-popup hidden z-40">
         <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between">
             <div class="mb-4 sm:mb-0">
                 <p class="text-gray-700">
@@ -529,34 +56,6 @@
         const ServerAPI = 'https://my_news.uz'
         // Sample news data (simulating API response)
 
-        const main = document.getElementById('mainContent')
-
-        const routes = {
-            '/': () => showPage('home'),
-            '/lenta': () => showPage('lenta'),
-            '/settings': () => showPage('sozlamalar')
-        }
-
-        const path = window.location.pathname
-
-        if (path.startsWith('/news/') && path.length > 7) {
-            
-        } else if (routes[path]) {
-            routes[path]()
-        } else {
-            main.innerHTML = '<h1>Page not found</h1>'
-        }
-
-        window.onpopstate = () => {
-            const path = window.location.pathname
-            if (path.startsWith('/news/')) {
-                loadNewsSingle(slug)
-            } else if (routes[path]) {
-                routes[path]()
-            } else {
-                main.innerHTML = '<h1>404</h1>'
-            } 
-        }
 
         const sampleNewsData = [
             {
@@ -1075,7 +574,7 @@
             </div>
             <div id="lentaNews" class="space-y-6">
                 <!-- Lenta news will be inserted here -->
-            </div>
+           <!-- </div>
             <div id="loadMoreContainer" class="text-center mt-8">
                 <button id="loadMoreBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-medium transition-colors">
                     Ko'proq yuklash
@@ -1513,4 +1012,4 @@
         }, 100);
     </script>
 <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'95feeed842eb8b0c',t:'MTc1MjY0MTk5Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
-</html>
+</html> -->
