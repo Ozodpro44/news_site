@@ -8,17 +8,11 @@ import Settings from './pages/Settings';
 import PopupCookie from './components/PopupCookie';
 import BottomBar from './components/BottomBar';
 import SearchResult from "./pages/SearchResult";
+import NewDetail from "./pages/NewDetail";
 
 // import { useEffect } from "react";
 
-
 function App() {
-  // const [darkMode] = localStorage.getItem('darkMode') ? [localStorage.getItem('darkMode') === 'true'] : [false];
-
-  // useEffect(() => {
-  //   if (darkMode) document.body.classList.add('dark-mode');
-  //   else document.body.classList.remove('dark-mode');
-  // }, [darkMode]);
 
   return (
     <BrowserRouter>
@@ -28,6 +22,7 @@ function App() {
                 <Route path="/lenta" element={<Lenta />} />
                 <Route path="/settings" element={<Settings />} />
                 <Route path="/search" element={<SearchResult />} />
+                <Route path="/news/:day/:month/:year/:lugs" element={<NewDetail />} />
             </Routes> 
       <PopupCookie />
       <BottomBar />

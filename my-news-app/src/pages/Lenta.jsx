@@ -1,6 +1,8 @@
-// import Home from './Home.jsx';
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+
+const ServerAPI = 'https://newsbackend-production-7d1f.up.railway.app';
 
 function Lenta() {
     
@@ -9,21 +11,13 @@ function Lenta() {
             lenta: "Lenta",
             loadMore: "Ko'proq yuklash",
             loading: "Yuklanmoqda...",
+            readMore: "Batafsil",
         },
         kr: {
             lenta: "Лента",
             loadMore: "Кўпроқ юклаш",
             loading: "Юкланмоқда...",
-        },
-        ru: {
-            lenta: "Лента",
-            loadMore: "Загрузить еще",
-            loading: "Загрузка...",
-        },
-        en: {
-            lenta: "Feed",
-            loadMore: "Load More",
-            loading: "Loading...",
+            readMore: "Батафсил",
         }
     };
 
@@ -32,15 +26,45 @@ function Lenta() {
 
     const [articles, setArticles] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [page, setPage] = useState(1);
+    const navigate = useNavigate();
+    const [page,    setPage] = useState(1);
 
-    const fetchNews = async (pageNumber) => {
+    useEffect(() => {
+        let ignore = false;
+        fetchNews(page, ignore);
+        return () => { ignore = true };
+    }, [page]);
+
+    const fetchNews = async (pageNumber, ignore) => {
         setLoading(true);
         try {
             const response = await axios.get(
-                `https://newsapi.org/v2/everything?q=latest&pageSize=10&page=${pageNumber}&apiKey=YOUR_API_KEY` // Replace with your actual API key
+                `${ServerAPI}/viewer/articles/limit?offset=${(pageNumber - 1) * 10}&limit=10` // Replace with your actual API key
             );
-            setArticles((prevArticles) => [...prevArticles, ...response.data.articles]);
+            if (!ignore && response.data) {
+                 const newArticles = response.data;
+
+                // Wait for all images to load
+                await Promise.all(
+                    newArticles.map(article => {
+                        return new Promise(resolve => {
+                            const img = new Image();
+                            img.src = `${ServerAPI}/${article.preview}`;
+                            img.onload = resolve;
+                            img.onerror = resolve; // still resolve if image fails
+                        });
+                    })
+                );
+                
+                setArticles(prev => {
+                    const merged = [...prev, ...response.data];
+                    const unique = merged.filter(
+                        (article, index, self) =>
+                            index === self.findIndex(a => a.id === article.id)
+                    );
+                    return unique;
+                });
+            }
         } catch (error) {
             console.error('Error fetching news:', error);
         } finally {
@@ -49,27 +73,44 @@ function Lenta() {
     };
 
     useEffect(() => {
-        fetchNews(1);
-    }, []);
+    let fetching = false;
 
-    const handleLoadMore = () => {
-        setPage((prevPage) => prevPage + 1);
-        fetchNews(page + 1);
+    const handleScroll = () => {
+        if (
+        window.innerHeight + window.scrollY >= document.body.offsetHeight - 200 && 
+        !loading && 
+        !fetching
+        ) {
+        fetching = true;
+        setPage(prev => prev + 1); // load next page
+        setTimeout(() => (fetching = false), 500); // debounce
+        }
     };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+    }, [loading]);
+
 
     const renderArticle = (article, index) => (
         <div key={index} className="bg-white rounded-xl shadow-lg overflow-hidden flex flex-col md:flex-row">
             <img
-                src={article.urlToImage || 'https://via.placeholder.com/400x200?text=No+Image'}
-                alt={article.title}
-                className="w-full md:w-1/3 h-48 md:h-auto object-cover"
+                src={article.preview 
+                    ? `${ServerAPI}/${article.preview}` 
+                    : 'https://placehold.co/600x400?text=No+Image'}
+                onError={(e) => { e.target.src = 'https://placehold.co/600x400?text=No+Image'; }}
+                alt={article[`title_${selectedLanguage}`]}
+                className="w-full md:w-1/3 h-48 md:h-48 object-cover object-center rounded-l-xl"
+                loading="eager"
+                decoding="async"
             />
             <div className="p-5 flex-grow flex flex-col">
-                <h3 className="text-xl font-bold text-gray-900 mb-2">{article.title}</h3>
-                <p className="text-gray-600 text-sm line-clamp-3 mb-4 flex-grow">{article.description}</p>
+                <h3 className="text-xl font-bold text-gray-900 mb-2 line-clamp-2">{article[`title_${selectedLanguage}`]}</h3>
+                <p className="text-gray-600 text-sm line-clamp-3 mb-4 flex-grow" onClick={() => navigate(`/news/${new Date(article.created_at).getDate()}/${new Date(article.created_at).getMonth() + 1}/${new Date(article.created_at).getFullYear()}/${article.lugs}`)}>{article[`content_${selectedLanguage}`]}</p>
                 <div className="flex justify-between items-center text-xs text-gray-500">
-                    <span>{new Date(article.publishedAt).toLocaleDateString()}</span>
-                    <a href={article.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 font-medium">Read more →</a>
+                    <span>{new Date(article.created_at).toLocaleDateString(selectedLanguage)}</span>
+                    <a href={`/news/${new Date(article.created_at).getDate()}/${new Date(article.created_at).getMonth() + 1}/${new Date(article.created_at).getFullYear()}/${article.lugs}`}
+                    className="text-blue-600 hover:text-blue-800 font-medium">{t.readMore} →</a>
                 </div>
             </div>
         </div>
@@ -106,13 +147,6 @@ function Lenta() {
                         {t.loading}
                     </div>
                 </div>
-                )}
-                {!loading && (
-                    <div id="loadMoreContainer" className="text-center mt-8">
-                        <button id="loadMoreBtn" onClick={handleLoadMore} className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-medium transition-colors">
-                            {t.loadMore}
-                        </button>
-                    </div>
                 )}
             </div>
         </div>

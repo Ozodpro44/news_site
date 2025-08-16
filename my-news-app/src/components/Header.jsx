@@ -11,14 +11,6 @@ function Header() {
             kr: {
                 subtitle: "Янгиликлар портали",
                 searchPlaceholder: "Янгиликлар қидириш...",
-            },
-            ru: {
-                subtitle: "Новостной портал",
-                searchPlaceholder: "Поиск новостей...",
-            },
-            en: {
-                subtitle: "News Portal",
-                searchPlaceholder: "Search news...",
             }
         };
 
@@ -42,12 +34,6 @@ function Header() {
             break;
         case "kr":
             lang = "uz-Cyrl-UZ"; // Correct locale for Cyrillic Uzbek
-            break;
-        case "ru":
-            lang = "ru-RU";
-            break;
-        case "en":
-            lang = "en-US";
             break;
         default:
             lang = "uz-Uz";
@@ -120,8 +106,6 @@ function Header() {
                         <select id="languageSelect" onChange={handleLanguageChange} class="appearance-none bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-pointer" value={selectedLanguage} >
                             <option value="uz" >O'zbekcha</option>
                             <option value="kr" >Ўзбекча</option>
-                            <option value="ru" >Русский</option>
-                            <option value="en" >English</option>
                         </select>
                     </div>
 

@@ -130,8 +130,8 @@
             }
             
             .modal-content {
-                margin: 0.5rem;
-                max-height: calc(100vh - 1rem);
+                margin: 1rem;
+                max-height: calc(100vh - 2rem);
             }
 
             
@@ -233,6 +233,49 @@
         
         .dark-mode .hover\\:bg-gray-50:hover {
             background-color: #374151 !important;
+        }
+
+        /* Light mode shimmer */
+        .shimmer {
+        position: relative;
+        overflow: hidden;
+        background-color: #e5e7eb; /* gray-200 */
+        }
+
+        .shimmer::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -150%;
+        height: 100%;
+        width: 150%;
+        background: linear-gradient(
+            90deg,
+            rgba(229, 231, 235, 0) 0%,
+            rgba(255, 255, 255, 0.6) 50%,
+            rgba(229, 231, 235, 0) 100%
+        );
+        animation: shimmer 1.5s infinite;
+        }
+
+        @keyframes shimmer {
+        100% {
+            left: 150%;
+        }
+        }
+
+        /* Dark mode shimmer */
+        .dark-mode .shimmer {
+        background-color: #374151; /* gray-700 */
+        }
+
+        .dark-mode .shimmer::after {
+        background: linear-gradient(
+            90deg,
+            rgba(55, 65, 81, 0) 0%,      /* gray-700 transparent */
+            rgba(156, 163, 175, 0.4) 50%, /* gray-400 highlight */
+            rgba(55, 65, 81, 0) 100%
+        );
         }
 
         

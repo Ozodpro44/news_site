@@ -16,16 +16,6 @@ function BottomBar() {
             home: "Бош саҳифа",
             lenta: "Лента",
             settings: "Созламалар",
-        },
-        ru: {
-            home: "Главная",
-            lenta: "Лента",
-            settings: "Настройки",
-        },
-        en: {
-            home: "Home",
-            lenta: "Feed",
-            settings: "Settings",
         }
     };
 

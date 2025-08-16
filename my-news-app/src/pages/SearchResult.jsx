@@ -24,20 +24,6 @@ function SearchResult() {
             noResults: "Ҳеч нарса топилмади",
             tryOtherKeywords: "Бошқа калит сўзлар билан қидириб кўринг",
             backToHome: "Бош саҳифага қайтиш"
-        },
-        ru: {
-            back: "Назад",
-            searchResults: "Результаты поиска",
-            noResults: "Ничего не найдено",
-            tryOtherKeywords: "Попробуйте другие ключевые слова",
-            backToHome: "Вернуться на главную"
-        },
-        en: {
-            back: "Back",
-            searchResults: "Search Results",
-            noResults: "Nothing found",
-            tryOtherKeywords: "Try other keywords",
-            backToHome: "Back to Home"
         }
     };
 

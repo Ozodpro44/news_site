@@ -24,24 +24,6 @@ function Settings() {
             contact: "Алоқа",
             sendMessage: "Мурожаат йўллаш",
             aboutSite: "Сайт ҳақида",
-        },
-        ru: {
-            settings: "Настройки",
-            languageSettings: "Языковые настройки",
-            designSettings: "Настройки дизайна",
-            darkMode: "Темный режим",
-            contact: "Контакты",
-            sendMessage: "Отправить сообщение",
-            aboutSite: "О сайте",
-        },
-        en: {
-            settings: "Settings",
-            languageSettings: "Language Settings",
-            designSettings: "Design Settings",
-            darkMode: "Dark Mode",
-            contact: "Contact",
-            sendMessage: "Send Message",
-            aboutSite: "About Site",
         }
     };
 
@@ -96,8 +78,6 @@ function Settings() {
                         <div className="space-y-3" onChange={handleLanguageChange}>
                             <label className="flex items-center"><input type="radio" name="language" value="uz" checked={selectedLanguage === 'uz'} className="mr-3 text-blue-600" /><span>O'zbekcha</span></label>
                             <label className="flex items-center"><input type="radio" name="language" value="kr" checked={selectedLanguage === 'kr'} className="mr-3 text-blue-600" /><span>Ўзбекча</span></label>
-                            <label className="flex items-center"><input type="radio" name="language" value="ru" checked={selectedLanguage === 'ru'} className="mr-3 text-blue-600" /><span>Русский</span></label>
-                            <label className="flex items-center"><input type="radio" name="language" value="en" checked={selectedLanguage === 'en'} className="mr-3 text-blue-600" /><span>English</span></label>
                         </div>
                     </div>
 
