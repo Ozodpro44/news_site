@@ -102,7 +102,7 @@ useEffect(() => {
     try {
       const lat = position.coords.latitude;
       const lon = position.coords.longitude;
-      const res = await fetch(`https://wttr.in/${lat},${lon}?format=j1`);
+      const res = await axios.get(`${ServerAPI}/viewer/weather?lat=${lat}&lon=${lon}`);
       const data = await res.json();
       let icon
       if (data.current_condition[0].weatherDesc[0].value === "Sunny") {
