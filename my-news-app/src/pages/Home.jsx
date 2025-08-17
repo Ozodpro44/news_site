@@ -98,48 +98,59 @@ function Home() {
 }, []);
 
 useEffect(() => {
-  navigator.geolocation.getCurrentPosition(async (position) => {
-    try {
-      const lat = position.coords.latitude;
-      const lon = position.coords.longitude;
-      const { data } = await axios.get(`${ServerAPI}/viewer/weather?lat=${lat}&lon=${lon}`);
-      let icon
-      if (data.current_condition[0].weatherDesc[0].value === "Sunny") {
-        icon = "01d";
-      } else if (data.current_condition[0].weatherDesc[0].value === "Partly cloudy") {
-        icon = "02d";
-      } else if (data.current_condition[0].weatherDesc[0].value === "Overcast") {
-        icon = "03d";
-      } else if (data.current_condition[0].weatherDesc[0].value === "Mist") {
-        icon = "50d";
-      } else if (data.current_condition[0].weatherDesc[0].value === "Patchy rain possible") {
-        icon = "09d";
-      } else if (data.current_condition[0].weatherDesc[0].value === "Patchy snow possible") {
-        icon = "13d";
-      } else if (data.current_condition[0].weatherDesc[0].value === "Patchy sleet possible") {
-        icon = "50d";
-      } else {
-        icon = "01d";
-      }
+  navigator.geolocation.getCurrentPosition(
+    async (position) => {
+      try {
+        const lat = position.coords.latitude;
+        const lon = position.coords.longitude;
+        const { data } = await axios.get(
+          `${ServerAPI}/viewer/weather?lat=${lat}&lon=${lon}`
+        );
 
-      setWeatherData({
-        temp: data.current_condition[0].temp_C,
-        description: data.current_condition[0].weatherDesc[0].value,
-        humidity: data.current_condition[0].humidity,
-        wind: data.current_condition[0].windspeedKmph,
-        icon: icon,
-        location: data.nearest_area[0].areaName[0].value,
-      });
-    } catch (err) {
-      console.error("Failed to load weather:", err);
-    } finally {
-      setLoadingWeather(false);
+        let icon = "01d"; // default
+        const desc = data.current_condition[0].weatherDesc[0].value;
+        if (desc.includes("Partly")) icon = "02d";
+        else if (desc.includes("Overcast")) icon = "03d";
+        else if (desc.includes("Mist")) icon = "50d";
+        else if (desc.includes("rain")) icon = "09d";
+        else if (desc.includes("snow")) icon = "13d";
+
+        setWeatherData({
+          temp: data.current_condition[0].temp_C,
+          description: desc,
+          humidity: data.current_condition[0].humidity,
+          wind: data.current_condition[0].windspeedKmph,
+          icon,
+          location: data.nearest_area[0].areaName[0].value,
+        });
+      } catch (err) {
+        console.error("Weather fetch failed:", err);
+      } finally {
+        setLoadingWeather(false);
+      }
+    },
+    async (err) => {
+      console.warn("Geolocation error:", err);
+      try {
+        // fallback to Tashkent
+        const { data } = await axios.get(`${ServerAPI}/viewer/weather?lat=41.3111&lon=69.2797`);
+        setWeatherData({
+          temp: data.current_condition[0].temp_C,
+          description: data.current_condition[0].weatherDesc[0].value,
+          humidity: data.current_condition[0].humidity,
+          wind: data.current_condition[0].windspeedKmph,
+          icon: "01d",
+          location: "Tashkent",
+        });
+      } catch (fallbackErr) {
+        console.error("Fallback weather failed:", fallbackErr);
+      } finally {
+        setLoadingWeather(false);
+      }
     }
-  }, (err) => {
-    console.error("Geolocation error:", err);
-    setLoadingWeather(false); // fallback: still stop loading
-  });
+  );
 }, []);
+
   const [darkMode] = useState(localStorage.getItem('darkMode') === 'true');
 
   useEffect(() => {
