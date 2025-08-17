@@ -102,8 +102,7 @@ useEffect(() => {
     try {
       const lat = position.coords.latitude;
       const lon = position.coords.longitude;
-      const res = await axios.get(`${ServerAPI}/viewer/weather?lat=${lat}&lon=${lon}`);
-      const data = await res.json();
+      const { data } = await axios.get(`${ServerAPI}/viewer/weather?lat=${lat}&lon=${lon}`);
       let icon
       if (data.current_condition[0].weatherDesc[0].value === "Sunny") {
         icon = "01d";
