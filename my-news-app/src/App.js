@@ -9,6 +9,7 @@ import PopupCookie from './components/PopupCookie';
 import BottomBar from './components/BottomBar';
 import SearchResult from "./pages/SearchResult";
 import NewDetail from "./pages/NewDetail";
+import ScrollToTop from "./components/ScrollToTop";
 
 // import { useEffect } from "react";
 
@@ -16,6 +17,7 @@ function App() {
 
   return (
     <BrowserRouter>
+    <ScrollToTop />
         <Header />
             <Routes>
                 <Route path="/" element={<Home />} />
