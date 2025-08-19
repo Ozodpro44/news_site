@@ -1,31 +1,24 @@
-
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import './App.css';
-import Header from './components/Header';
-import Home from './pages/Home';
-import Lenta from './pages/Lenta';
-import Settings from './pages/Settings';
-import PopupCookie from './components/PopupCookie';
-import BottomBar from './components/BottomBar';
+import Home from "./pages/Home";
+import Lenta from "./pages/Lenta";
+import Settings from "./pages/Settings";
 import SearchResult from "./pages/SearchResult";
 import NewDetail from "./pages/NewDetail";
-import ScrollToTop from "./components/ScrollToTop";
-
-// import { useEffect } from "react";
+import Header from "./components/Header";
+import PopupCookie from "./components/PopupCookie";
+import BottomBar from "./components/BottomBar";
 
 function App() {
-
   return (
     <BrowserRouter>
-    <ScrollToTop />
-        <Header />
-            <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/lenta" element={<Lenta />} />
-                <Route path="/settings" element={<Settings />} />
-                <Route path="/search" element={<SearchResult />} />
-                <Route path="/news/:day/:month/:year/:lugs" element={<NewDetail />} />
-            </Routes> 
+      <Header />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/lenta" element={<Lenta />} />
+        <Route path="/settings" element={<Settings />} />
+        <Route path="/search" element={<SearchResult />} />
+        <Route path="/news/:day/:month/:year/:lugs" element={<NewDetail />} />
+      </Routes>
       <PopupCookie />
       <BottomBar />
     </BrowserRouter>
