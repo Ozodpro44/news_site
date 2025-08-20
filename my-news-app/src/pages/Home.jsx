@@ -244,7 +244,7 @@ useEffect(() => {
                   onError={(e) => { e.target.src = 'https://placehold.co/400x200?text=No+Image'; }}
                 />
                 <div className="p-4">
-                  <h3 className="font-semibold text-lg text-gray-900">{article[`title_${selectedLanguage}`]}</h3>
+                  <h3 className="font-semibold text-lg text-gray-900 line-clamp-2">{article[`title_${selectedLanguage}`]}</h3>
                 </div>
               </div>
             ))}
