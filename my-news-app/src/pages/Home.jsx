@@ -171,7 +171,7 @@ useEffect(() => {
         onError={(e) => { e.target.src = 'https://placehold.co/160x100?text=No+Image'; }}
       />
       <div className="flex-1">
-        <h3 className="font-semibold text-lg text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+        <h3 className="font-semibold text-lg text-gray-900 mb-2 group-hover:text-blue-600 transition-colors line-clamp-2">
           {article[`title_${selectedLanguage}`]}
         </h3>
         <p className="text-sm text-gray-600 line-clamp-2">
