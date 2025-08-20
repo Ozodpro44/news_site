@@ -94,7 +94,7 @@ function SearchResult() {
             ) : (
               <div id="searchResults" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {searchResults.map((article, index) => (
-                  <div key={index} className="bg-white rounded-xl shadow-lg overflow-hidden flex flex-col">
+                  <div key={index} className="bg-white rounded-xl shadow-lg overflow-hidden flex flex-col hover:scale-[1.02] hover:shadow-2xl transition-transform duration-300">
                     <img src={article.urlToImage || 'https://via.placeholder.com/400x200?text=No+Image'} alt={article.title} className="w-full h-48 object-cover" />
                     <div className="p-5 flex-grow">
                       <h3 className="text-lg font-bold text-gray-900 mb-2">{article.title}</h3>

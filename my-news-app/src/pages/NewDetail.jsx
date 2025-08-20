@@ -155,7 +155,7 @@ function NewDetail() {
                                     alt={recArticle[`title_${selectedLanguage}`]}
                                     className="w-full h-48 object-cover"
                                 />
-                                <div className="p-5 flex-grow">
+                                <div className="p-5 flex-grow cursor-pointer" onClick={() => navigate(`/news/${new Date(recArticle.created_at).getDate()}/${new Date(recArticle.created_at).getMonth() + 1}/${new Date(recArticle.created_at).getFullYear()}/${recArticle.lugs}`)}>
                                     <h3 className="text-lg font-bold text-gray-900 mb-2">{recArticle[`title_${selectedLanguage}`]}</h3>
                                     <p className="text-gray-600 text-sm line-clamp-3">{recArticle[`content_${selectedLanguage}`]}</p>
                                 </div>

@@ -7,10 +7,12 @@ import NewDetail from "./pages/NewDetail";
 import Header from "./components/Header";
 import PopupCookie from "./components/PopupCookie";
 import BottomBar from "./components/BottomBar";
+import ScrollToTop from "./components/ScrollToTop";
 
 function App() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <Header />
       <Routes>
         <Route path="/" element={<Home />} />

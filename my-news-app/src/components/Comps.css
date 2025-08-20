@@ -232,3 +232,25 @@
         .dark-mode .hover\\:bg-gray-50:hover {
             background-color: #374151 !important;
         }
+
+        .nav-tab {
+        transition: all 0.25s ease;
+        }
+        .nav-tab:hover {
+        background-color: rgba(37, 99, 235, 0.05); /* лёгкий hover с синим */
+        }
+
+        @keyframes slideUp {
+        from {
+            transform: translate(-50%, 100%);
+            opacity: 0;
+        }
+        to {
+            transform: translate(-50%, 0);
+            opacity: 1;
+        }
+        }
+
+        .animate-slideUp {
+        animation: slideUp 0.4s ease-out;
+        }
