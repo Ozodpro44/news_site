@@ -1,30 +1,49 @@
+import { Toaster } from "@/components/ui/toaster";
+import { Toaster as Sonner } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Home from "./pages/Home";
+import { ThemeProvider } from "@/contexts/ThemeContext";
+import Index from "./pages/Index";
 import Lenta from "./pages/Lenta";
+import Categories from "./pages/Categories";
+import CategoryDetail from "./pages/CategoryDetail";
+import SingleNews from "./pages/SingleNews";
 import Settings from "./pages/Settings";
-import SearchResult from "./pages/SearchResult";
-import NewDetail from "./pages/NewDetail";
-import Header from "./components/Header";
-import PopupCookie from "./components/PopupCookie";
-import BottomBar from "./components/BottomBar";
-import ScrollToTop from "./components/ScrollToTop";
+import Search from "./pages/Search";
+import Saved from "./pages/Saved";
+import About from "./pages/About";
+import Contact from "./pages/Contact";
+import Advertising from "./pages/Advertising";
+import NotFound from "./pages/NotFound";
 
-function App() {
-  return (
-    <BrowserRouter>
-      <ScrollToTop />
-      <Header />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/lenta" element={<Lenta />} />
-        <Route path="/settings" element={<Settings />} />
-        <Route path="/search" element={<SearchResult />} />
-        <Route path="/news/:day/:month/:year/:lugs" element={<NewDetail />} />
-      </Routes>
-      <PopupCookie />
-      <BottomBar />
-    </BrowserRouter>
-  );
-}
+const queryClient = new QueryClient();
+
+const App = () => (
+  <BrowserRouter>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/lenta" element={<Lenta />} />
+            <Route path="/categories" element={<Categories />} />
+            <Route path="/category/:slug" element={<CategoryDetail />} />
+            <Route path="/news/:id" element={<SingleNews />} />
+            <Route path="/settings" element={<Settings />} />
+            <Route path="/search" element={<Search />} />
+            <Route path="/saved" element={<Saved />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/advertising" element={<Advertising />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </TooltipProvider>
+      </ThemeProvider>
+    </QueryClientProvider>
+  </BrowserRouter>
+);
 
 export default App;

@@ -1,120 +1,137 @@
-import './Pages.css';
-import React, { useState } from 'react';
+import React from "react";
+import { MainLayout } from "@/components/layout/MainLayout";
+import { Card } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { Button } from "@/components/ui/button";
+import { useTheme } from "@/contexts/ThemeContext";
+import { Info, Phone, Briefcase, Moon, Sun, Globe } from "lucide-react";
+import { Link } from "react-router-dom";
 
 function Settings() {
-  const [selectedLanguage, setSelectedLanguage] = useState(localStorage.getItem('selectedLanguage') || 'uz');
-  const [darkMode, setDarkMode] = useState(localStorage.getItem('darkMode') === "true");
-
-  const translations = {
-    uz: {
-      settings: "Sozlamalar",
-      languageSettings: "Til sozlamalari",
-      designSettings: "Dizayn",
-      darkMode: "Tungi rejim",
-      contact: "Aloqa",
-      sendMessage: "Murojaat yo'llash",
-      aboutSite: "Sayt haqida",
-    },
-    kr: {
-      settings: "Созламалар",
-      languageSettings: "Тил созламалари",
-      designSettings: "Дизайн",
-      darkMode: "Тунги режим",
-      contact: "Алоқа",
-      sendMessage: "Мурожаат йўллаш",
-      aboutSite: "Сайт ҳақида",
-    }
-  };
-
-  const t = translations[selectedLanguage];
-
-  const handleLanguageChange = (event) => {
-    const newLang = event.target.value;
-    localStorage.setItem('selectedLanguage', newLang);
-    setSelectedLanguage(newLang);
-    window.location.reload();
-  };
-
-  const handleDarkModeToggle = () => {
-    const newVal = !darkMode;
-    setDarkMode(newVal);
-    localStorage.setItem('darkMode', newVal);
-    if (newVal) {
-      document.documentElement.classList.add("dark-mode");
-    } else {
-      document.documentElement.classList.remove("dark-mode");
-    }
-  };
-
-  React.useEffect(() => {
-    document.documentElement.classList.toggle('dark-mode', darkMode);
-  }, [darkMode]);
-
-
+  const { theme, language, toggleTheme, setLanguage } = useTheme();
 
   return (
-    <div className="bg-gray-100 min-h-screen pb-20">
-      <div className="max-w-2xl mx-auto px-4 py-6">
-        {/* Заголовок */}
-        <h1 className="text-2xl font-bold mb-6">{t.settings}</h1>
+    <MainLayout>
+      <div className="container mx-auto px-4 py-6 max-w-2xl">
+        <h1 className="text-3xl font-bold mb-8">Sozlamalar</h1>
 
-        {/* Язык */}
-        <div className="bg-white rounded-xl overflow-hidden mb-6">
-          <h3 className="px-4 py-3 text-gray-700 font-semibold border-b">{t.languageSettings}</h3>
-          <div className="divide-y">
-            <label className="flex items-center px-4 py-3">
-              <input
-                type="radio"
-                name="lang"
-                value="uz"
-                checked={selectedLanguage === "uz"}
-                onChange={handleLanguageChange}
-                className="mr-3 form-radio text-blue-600 focus:ring-blue-500"
+        <div className="space-y-6">
+          {/* Theme Toggle */}
+          <Card className="p-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                {theme === "light" ? (
+                  <Sun className="h-5 w-5 text-primary" />
+                ) : (
+                  <Moon className="h-5 w-5 text-primary" />
+                )}
+                <div>
+                  <Label htmlFor="theme-toggle" className="text-base font-semibold">
+                    Tungi rejim
+                  </Label>
+                  <p className="text-sm text-muted-foreground">
+                    Qorong'i rejimni yoqish yoki o'chirish
+                  </p>
+                </div>
+              </div>
+              <Switch
+                id="theme-toggle"
+                checked={theme === "dark"}
+                onCheckedChange={toggleTheme}
               />
-              <span>O‘zbekcha</span>
-            </label>
-            <label className="flex items-center px-4 py-3">
-              <input
-                type="radio"
-                name="lang"
-                value="kr"
-                checked={selectedLanguage === "kr"}
-                onChange={handleLanguageChange}
-                className="mr-3 form-radio text-blue-600 focus:ring-blue-500"
-              />
-              <span>Ўзбекча</span>
-            </label>
-          </div>
-        </div>
+            </div>
+          </Card>
 
-        {/* Дизайн */}
-        <div className="bg-white rounded-xl overflow-hidden mb-6">
-          <h3 className="px-4 py-3 text-gray-700 font-semibold border-b">{t.designSettings}</h3>
-          <div className="flex items-center justify-between px-4 py-3">
-            <span>{t.darkMode}</span>
-            <label className="relative inline-flex items-center cursor-pointer">
-              <input type="checkbox" checked={darkMode} onChange={handleDarkModeToggle} className="sr-only peer" />
-              <div className="w-11 h-6 bg-gray-300 rounded-full peer peer-checked:bg-blue-600 peer-focus:ring-blue-300 
-                peer-focus:ring 
-                after:content-[''] after:absolute after:top-[2px] after:left-[2px] 
-                after:bg-white after:h-5 after:w-5 after:rounded-full after:transition-all 
-                peer-checked:after:translate-x-full"></div>
-            </label>
-          </div>
-        </div>
+          {/* Language Selector */}
+          <Card className="p-6">
+            <div className="flex items-start gap-3">
+              <Globe className="h-5 w-5 text-primary mt-1" />
+              <div className="flex-1">
+                <Label className="text-base font-semibold mb-3 block">Til</Label>
+                <p className="text-sm text-muted-foreground mb-3">
+                  Ilovaning tilini tanlang
+                </p>
+                <div className="flex flex-col gap-2">
+                  <Button
+                    variant={language === "uz" ? "default" : "outline"}
+                    className="justify-start"
+                    onClick={() => setLanguage("uz")}
+                  >
+                    🇺🇿 O'zbekcha
+                  </Button>
+                  <Button
+                    variant={language === "ru" ? "default" : "outline"}
+                    className="justify-start"
+                    onClick={() => setLanguage("ru")}
+                  >
+                    🇷🇺 Русский
+                  </Button>
+                  <Button
+                    variant={language === "en" ? "default" : "outline"}
+                    className="justify-start"
+                    onClick={() => setLanguage("en")}
+                  >
+                    🇬🇧 English
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </Card>
 
-        {/* Контакты */}
-        <div className="bg-white rounded-xl overflow-hidden">
-          <h3 className="px-4 py-3 text-gray-700 font-semibold border-b">{t.contact}</h3>
-          <button className="w-full text-left px-4 py-3 hover:bg-gray-50 flex items-center">
-            📧 <span className="ml-3">{t.sendMessage}</span>
-          </button>
-          <button className="w-full text-left px-4 py-3 hover:bg-gray-50 flex items-center">
-            ℹ️ <span className="ml-3">{t.aboutSite}</span>
-          </button>
+          {/* Info Links */}
+          <div className="space-y-3">
+            <Link to="/about">
+              <Card className="p-4 hover:shadow-md transition-shadow cursor-pointer">
+                <div className="flex items-center gap-3">
+                  <Info className="h-5 w-5 text-primary" />
+                  <div>
+                    <p className="font-semibold">Biz haqimizda</p>
+                    <p className="text-sm text-muted-foreground">
+                      Platforma haqida ma'lumot
+                    </p>
+                  </div>
+                </div>
+              </Card>
+            </Link>
+
+            <Link to="/contact">
+              <Card className="p-4 hover:shadow-md transition-shadow cursor-pointer">
+                <div className="flex items-center gap-3">
+                  <Phone className="h-5 w-5 text-primary" />
+                  <div>
+                    <p className="font-semibold">Biz bilan bog'lanish</p>
+                    <p className="text-sm text-muted-foreground">
+                      Aloqa ma'lumotlari
+                    </p>
+                  </div>
+                </div>
+              </Card>
+            </Link>
+
+            <Link to="/advertising">
+              <Card className="p-4 hover:shadow-md transition-shadow cursor-pointer">
+                <div className="flex items-center gap-3">
+                  <Briefcase className="h-5 w-5 text-primary" />
+                  <div>
+                    <p className="font-semibold">Reklama</p>
+                    <p className="text-sm text-muted-foreground">
+                      Biznes hamkorlik
+                    </p>
+                  </div>
+                </div>
+              </Card>
+            </Link>
+          </div>
+
+          {/* Footer Text */}
+          <div className="text-center text-sm text-muted-foreground pt-8">
+            <p>© 2025 News Platform</p>
+            <p>Barcha huquqlar himoyalangan</p>
+          </div>
         </div>
       </div>
-    </div>
+    </MainLayout>
   );
 }
 

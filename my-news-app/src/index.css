@@ -1,13 +1,206 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
+  @tailwind base;
+  @tailwind components;
+  @tailwind utilities;
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
-}
+  /* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+  All colors MUST be HSL.
+  */
+
+  @layer base {
+    :root {
+      /* News Platform Color System */
+      --background: 0 0% 98%;
+      --foreground: 222 47% 11%;
+
+      --card: 0 0% 100%;
+      --card-foreground: 222 47% 11%;
+
+      --popover: 0 0% 100%;
+      --popover-foreground: 222 47% 11%;
+
+      /* Trust Blue - Primary */
+      --primary: 217 91% 60%;
+      --primary-foreground: 0 0% 100%;
+      --primary-hover: 217 91% 55%;
+
+      /* Coral Accent - Breaking News */
+      --secondary: 24 95% 53%;
+      --secondary-foreground: 0 0% 100%;
+      --secondary-hover: 24 95% 48%;
+
+      /* Neutral Grays */
+      --muted: 220 13% 95%;
+      --muted-foreground: 220 9% 46%;
+
+      --accent: 220 13% 95%;
+      --accent-foreground: 222 47% 11%;
+
+      --destructive: 0 84% 60%;
+      --destructive-foreground: 0 0% 100%;
+
+      --border: 220 13% 91%;
+      --input: 220 13% 91%;
+      --ring: 217 91% 60%;
+
+      --radius: 0.75rem;
+
+      /* News-specific colors */
+      --breaking: 0 84% 60%;
+      --trending: 45 93% 47%;
+      --success: 142 71% 45%;
+
+      /* Category colors */
+      --category-jamiyat: 217 91% 60%;
+      --category-texnologiya: 262 83% 58%;
+      --category-iqtisodiyot: 142 71% 45%;
+      --category-sport: 24 95% 53%;
+      --category-madaniyat: 280 65% 60%;
+      --category-dunyo: 200 98% 39%;
+      --category-siyosat: 0 0% 40%;
+      --category-fan: 45 93% 47%;
+
+      /* Shadows */
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+    }
+
+    .dark {
+      /* Dark Mode Colors */
+      --background: 222 47% 8%;
+      --foreground: 210 40% 98%;
+
+      --card: 222 47% 11%;
+      --card-foreground: 210 40% 98%;
+
+      --popover: 222 47% 11%;
+      --popover-foreground: 210 40% 98%;
+
+      --primary: 217 91% 60%;
+      --primary-foreground: 0 0% 100%;
+      --primary-hover: 217 91% 65%;
+
+      --secondary: 24 95% 53%;
+      --secondary-foreground: 0 0% 100%;
+      --secondary-hover: 24 95% 58%;
+
+      --muted: 217 33% 17%;
+      --muted-foreground: 215 20% 65%;
+
+      --accent: 217 33% 17%;
+      --accent-foreground: 210 40% 98%;
+
+      --destructive: 0 63% 31%;
+      --destructive-foreground: 210 40% 98%;
+
+      --border: 217 33% 17%;
+      --input: 217 33% 17%;
+      --ring: 217 91% 60%;
+
+      --breaking: 0 84% 60%;
+      --trending: 45 93% 47%;
+      --success: 142 71% 45%;
+
+      /* Category colors - same in dark mode */
+      --category-jamiyat: 217 91% 60%;
+      --category-texnologiya: 262 83% 58%;
+      --category-iqtisodiyot: 142 71% 45%;
+      --category-sport: 24 95% 53%;
+      --category-madaniyat: 280 65% 60%;
+      --category-dunyo: 200 98% 39%;
+      --category-siyosat: 0 0% 60%;
+      --category-fan: 45 93% 47%;
+
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.2);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.3);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.3);
+    }
+  }
+
+  @layer base {
+    * {
+      @apply border-border;
+    }
+
+    body {
+      @apply bg-background text-foreground antialiased;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      @apply font-semibold tracking-tight;
+    }
+
+    h1 {
+      @apply text-3xl md:text-4xl lg:text-5xl;
+    }
+
+    h2 {
+      @apply text-2xl md:text-3xl lg:text-4xl;
+    }
+
+    h3 {
+      @apply text-xl md:text-2xl lg:text-3xl;
+    }
+  }
+
+  @layer utilities {
+    .animate-fade-in {
+      animation: fadeIn 0.3s ease-in;
+    }
+
+    .animate-slide-up {
+      animation: slideUp 0.4s ease-out;
+    }
+
+    .animate-scale-in {
+      animation: scaleIn 0.2s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+
+    @keyframes slideUp {
+      from {
+        transform: translateY(20px);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes scaleIn {
+      from {
+        transform: scale(0.95);
+        opacity: 0;
+      }
+
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .card-hover {
+      @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+    }
+
+    .text-balance {
+      text-wrap: balance;
+    }
+  }
