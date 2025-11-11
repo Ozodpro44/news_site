@@ -16,11 +16,8 @@ export const MobileHeader = () => {
     <header className="md:hidden sticky top-0 z-50 w-full border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60">
       <div className="flex h-14 items-center justify-between px-4">
         <Link to="/" className="flex items-center space-x-2">
-          <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
-            <span className="text-white font-bold text-sm">C</span>
-          </div>
-          <span className="text-lg font-bold">Chust 24/7</span>
-        </Link>
+            <img src="/IMG_0785.PNG" alt="Chust 24/7 Logo" className="h-7 w-autorounded-md object-cover" />
+          </Link>
 
         <div className="flex items-center space-x-2">
           <Link to="/search">

@@ -34,10 +34,7 @@ export const DesktopNav = () => {
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
-            <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
-              <span className="text-white font-bold text-xl">C</span>
-            </div>
-            <span className="text-xl font-bold">Chust 24/7</span>
+            <img src="/IMG_0785.PNG" alt="Chust 24/7 Logo" className="h-10 w-autorounded-md object-cover" />
           </Link>
 
           {/* Navigation Links */}
