@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { categories } from "@/data/mockNews";
+import { fetchCategories, ApiCategory } from "@/data/fetchData";
 import { Link } from "react-router-dom";
 import * as Icons from "lucide-react";
 import { useTheme } from "@/contexts/ThemeContext";
@@ -10,6 +10,7 @@ import { useTheme } from "@/contexts/ThemeContext";
 const Categories = () => {
   window.scrollTo(0, 0);
   const [loading, setLoading] = useState(true);
+  const [categories, setCategories] = useState<ApiCategory[]>([]);
   const { language } = useTheme();
 
   const texts = {
@@ -23,9 +24,34 @@ const Categories = () => {
 
   const t = texts[language];
 
+  // Icon mapping based on category name
+  const getIcon = (name: string): keyof typeof Icons => {
+    const lowerName = name.toLowerCase();
+    if (lowerName.includes('jamiyat') || lowerName.includes('жамият')) return 'Users';
+    if (lowerName.includes('texnologiya') || lowerName.includes('технология')) return 'Cpu';
+    if (lowerName.includes('iqtisodiyot') || lowerName.includes('иқтисодиёт')) return 'TrendingUp';
+    if (lowerName.includes('sport')) return 'Trophy';
+    if (lowerName.includes('madaniyat') || lowerName.includes('маданият')) return 'Palette';
+    if (lowerName.includes('dunyo') || lowerName.includes('дунё')) return 'Globe';
+    if (lowerName.includes('siyosat') || lowerName.includes('сиёсат')) return 'Building';
+    if (lowerName.includes('fan')) return 'Microscope';
+    return 'FileText';
+  };
+
   useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 700);
-    return () => clearTimeout(timer);
+    const loadCategories = async () => {
+      try {
+        setLoading(true);
+        const data = await fetchCategories();
+        setCategories(data);
+      } catch (error) {
+        console.error("Failed to fetch categories:", error);
+        setCategories([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadCategories();
   }, []);
 
   return (
@@ -45,14 +71,19 @@ const Categories = () => {
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {categories.map((category) => {
-              const Icon = Icons[category.icon as keyof typeof Icons] as React.ComponentType<{ className?: string }>;
+              const categoryName = language === 'uz' ? category.name_uz : category.name_kr;
+              const iconName = getIcon(categoryName);
+              const Icon = Icons[iconName] as any;
               
               return (
-                <Link key={category.slug} to={`/category/${category.slug}`}>
-                  <Card className="p-6 hover:shadow-lg transition-all hover:-translate-y-1 cursor-pointer border-l-4">
+                <Link key={category.id} to={`/category/${category.slug}`}>
+                  <Card className="p-6 hover:shadow-lg transition-all hover:-translate-y-1 cursor-pointer border-l-4" style={{ borderLeftColor: category.color || '#3b82f6' }}>
                     <div className="flex flex-col items-center text-center gap-3">
-                      {Icon && <Icon className={`h-10 w-10 ${category.colorClass}`} />}
-                      <h3 className="font-semibold text-lg">{category.name}</h3>
+                      {Icon && <Icon className="h-10 w-10" style={{ color: category.color || '#3b82f6' }} />}
+                      <h3 className="font-semibold text-lg">{categoryName}</h3>
+                      {category.articlesCount !== undefined && (
+                        <p className="text-sm text-muted-foreground">{category.articlesCount} {language === 'uz' ? 'ta yangilik' : 'та янгилик'}</p>
+                      )}
                     </div>
                   </Card>
                 </Link>

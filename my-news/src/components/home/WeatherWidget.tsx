@@ -1,18 +1,43 @@
-import { Cloud, CloudRain, Sun, Droplets, Wind } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Cloud, CloudRain, Sun, Droplets, Wind, LucideIcon } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { Skeleton } from "../ui/skeleton";
+// import { fetchWeather } from "@/data/fetchData";
 
-export const WeatherWidget = () => {
-  // Mock data - in real app, fetch from API
-  const weather = {
-    city: "Toshkent",
-    temp: 18,
-    condition: "Quyoshli",
+interface WeatherWidgetProps {
+  data: any
+}
+
+export const WeatherWidget = ({data}: WeatherWidgetProps) => {
+  const [weather, setWeather] = useState({
+    city: "",
+    temp: 0,
+    condition: "-",
     icon: "sun",
-    humidity: 65,
-    wind: 12,
+    humidity: 0,
+    wind: 0,
+  });
+
+  useEffect(() => {
+ if (data) {
+ setWeather(data);
+ }
+  }, [data]);
+  
+  if (!data || !weather.icon) {
+    return (
+      <Skeleton className="h-40 rounded-lg" /> 
+    );
+  }
+  const getIconComponent = (iconName: string): LucideIcon => {
+    switch (iconName) {
+      case "rain": return CloudRain;
+      case "cloud": return Cloud;
+      default: return Sun;
+    }
   };
 
-  const Icon = weather.icon === "sun" ? Sun : weather.icon === "rain" ? CloudRain : Cloud;
+  const Icon = weather.icon;
   
   // Dynamic background based on weather
   const weatherBg = {
@@ -20,6 +45,8 @@ export const WeatherWidget = () => {
     rain: "from-slate-500 via-slate-600 to-slate-700",
     cloud: "from-gray-400 via-gray-500 to-gray-600"
   }[weather.icon] || "from-sky-400 to-blue-500";
+
+  const CurrentIcon = getIconComponent(weather.icon);
 
   return (
     <Card className="overflow-hidden border-0">
@@ -29,7 +56,7 @@ export const WeatherWidget = () => {
             <div className="text-sm font-medium opacity-90 mb-1">{weather.city}</div>
             <div className="md:text-5xl text-3xl font-bold tracking-tight">{weather.temp}°</div>
           </div>
-          <Icon className="md:h-16 md:w-16 h-12 w-12 opacity-90" />
+          <CurrentIcon className="md:h-16 md:w-16 h-12 w-12 opacity-90" />
         </div>
         
         <div className="flex items-center justify-between">

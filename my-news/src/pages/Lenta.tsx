@@ -3,15 +3,14 @@ import { MainLayout } from "@/components/layout/MainLayout";
 import { NewsCard } from "@/components/news/NewsCard";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { fetchLenta } from "@/data/fetchData";
-import { NewsArticle } from "@/data/mockNews";
+import { fetchLenta, NewsArticle} from "@/data/fetchData";
 import { SlidersHorizontal } from "lucide-react";
 import { useTheme } from "@/contexts/ThemeContext";
 
 const Lenta = () => {
   const [loading, setLoading] = useState(true);
   const { language } = useTheme();
-  const [sortBy, setSortBy] = useState<"newest" | "popular">("newest");
+  const [sortBy, setSortBy] = useState<"latest" | "famous">("latest");
   const [news, setNews] = useState<NewsArticle[]>([]);
   const [loadingMore, setLoadingMore] = useState(false);
   window.scrollTo(0, 0);
@@ -37,38 +36,39 @@ const Lenta = () => {
 
 
   const sortedNews = [...news].sort((a, b) => {
-    if (sortBy === "newest") {
+    if (sortBy === "latest") {
       return new Date(b.date).getTime() - new Date(a.date).getTime();
     }
     return b.views - a.views;
   });
 
   useEffect(() => {
-    fetchLenta(sortBy, 6, 0).then((lenta) => {
-      setNews(lenta);
-    });
-    setLoading(true);
-    const timer = setTimeout(() => setLoading(false), 800);
-    return () => clearTimeout(timer);
+    const loadNews = async () => {
+      try {
+        setLoading(true);
+        const lenta = await fetchLenta(sortBy, 6, 0);
+        setNews(lenta);
+      } catch (error) {
+        console.error("Failed to fetch lenta:", error);
+        setNews([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadNews();
   }, [sortBy]);
   
-  const loadMore = () => {
-    setLoadingMore(true);
-    fetchLenta(sortBy, 6, news.length).then((lenta) => {
+  const loadMore = async () => {
+    try {
+      setLoadingMore(true);
+      const lenta = await fetchLenta(sortBy, 6, news.length);
       setNews((prevNews) => [...prevNews, ...lenta]);
-    });
-    setTimeout(() => {
+    } catch (error) {
+      console.error("Failed to load more:", error);
+    } finally {
       setLoadingMore(false);
-    }, 500);
-  }
-
-  // const likeArticle = (id: string) => {
-  //   setNews((prevNews) =>
-  //     prevNews.map((article) =>
-  //       article.id === id ? { ...article, likes: article.likes + 1 } : article
-  //     )
-  //   );
-  // };
+    }
+  };
 
   return (
     <MainLayout>
@@ -78,16 +78,16 @@ const Lenta = () => {
           <h1 className="text-2xl font-bold">{t.lenta}</h1>
           <div className="flex gap-2">
             <Button
-              variant={sortBy === "newest" ? "default" : "outline"}
+              variant={sortBy === "latest" ? "default" : "outline"}
               size="sm"
-              onClick={() => setSortBy("newest")}
+              onClick={() => setSortBy("latest")}
             >
               {t.latestNews}
             </Button>
             <Button
-              variant={sortBy === "popular" ? "default" : "outline"}
+              variant={sortBy === "famous" ? "default" : "outline"}
               size="sm"
-              onClick={() => setSortBy("popular")}
+              onClick={() => setSortBy("famous")}
             >
               {t.popularNews}
             </Button>

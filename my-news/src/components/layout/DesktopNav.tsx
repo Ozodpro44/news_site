@@ -2,7 +2,7 @@ import { Link, useLocation } from "react-router-dom";
 import { Search, Settings, Moon, Sun, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/contexts/ThemeContext";
-import { categories } from "@/data/mockNews";
+import { useCategories } from "@/contexts/CategoriesContext";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,6 +13,7 @@ import {
 export const DesktopNav = () => {
   const location = useLocation();
   const { theme, language, setLanguage, toggleTheme } = useTheme();
+  const { categories } = useCategories();
 
   const texts = {
     uz: {
@@ -41,7 +42,7 @@ export const DesktopNav = () => {
 
           {/* Navigation Links */}
           <nav className="flex items-center space-x-1">
-            <Link to="/">
+            <Link to="/" className="border-r-2 pr-2 color">
               <Button
                 variant={isActive("/") ? "default" : "ghost"}
                 size="sm"
@@ -49,13 +50,13 @@ export const DesktopNav = () => {
                 {t.home}
               </Button>
             </Link>
-            {categories.slice(0, 5).map((cat) => (
-              <Link key={cat.slug} to={`/category/${cat.slug}`}>
+            {categories.slice(0, 6).map((cat) => (
+              <Link key={cat.id} to={`/category/${cat.slug}`}>
                 <Button
                   variant={isActive(`/category/${cat.slug}`) ? "default" : "ghost"}
                   size="sm"
                 >
-                  {cat.name}
+                  {language === 'uz' ? cat.name_uz : cat.name_kr}
                 </Button>
               </Link>
             ))}

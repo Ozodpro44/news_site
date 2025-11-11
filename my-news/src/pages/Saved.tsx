@@ -3,7 +3,7 @@ import { MainLayout } from "@/components/layout/MainLayout";
 import { NewsCard } from "@/components/news/NewsCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useLikes } from "@/hooks/useLikes";
-import { mockNews } from "@/data/mockNews";
+import { fetchNewsById, NewsArticle } from "@/data/fetchData";
 import { Heart } from "lucide-react";
 import { useTheme } from "@/contexts/ThemeContext";
 
@@ -12,7 +12,7 @@ const Saved = () => {
   const [loading, setLoading] = useState(true);
   const { likedArticles } = useLikes();
   const { language} = useTheme();
-  const savedNews = mockNews.filter((article) => likedArticles.has(article.id));
+  const [savedNews, setSavedNews] = useState<NewsArticle[]>([]);
 
   const texts = {
     uz: {
@@ -30,9 +30,22 @@ const Saved = () => {
   const t = texts[language];
 
   useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 700);
-    return () => clearTimeout(timer);
-  }, []);
+    const loadSavedNews = async () => {
+      try {
+        setLoading(true);
+        const newsPromises = Array.from(likedArticles).map(id => fetchNewsById(id));
+        const newsResults = await Promise.all(newsPromises);
+        const validNews = newsResults.filter((article): article is NewsArticle => article !== undefined);
+        setSavedNews(validNews);
+      } catch (error) {
+        console.error("Failed to fetch saved news:", error);
+        setSavedNews([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadSavedNews();
+  }, [likedArticles]);
 
   return (
     <MainLayout>

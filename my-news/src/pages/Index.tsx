@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { HeroCarousel } from "@/components/home/HeroCarousel";
 import { NewsCard } from "@/components/news/NewsCard";
@@ -8,23 +8,23 @@ import { HashtagBar } from "@/components/home/HashtagBar";
 import { AdBlock } from "@/components/home/AdBlock";
 import { Footer } from "@/components/Footer";
 import { Skeleton } from "@/components/ui/skeleton";
-import { mockNews } from "@/data/mockNews";
+import { fetchNews, fetchWeather, NewsArticle} from "@/data/fetchData";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useScrollStore } from "@/hooks/useScrollStore";
+import { useQuery } from "@tanstack/react-query";
 import { useTheme } from "@/contexts/ThemeContext";
-
 
 const Index = () => {
   const [loading, setLoading] = useState(true);
-  const latestNews = mockNews.slice(0, 6);
-  const popularNews = mockNews
-    .sort((a, b) => b.views - a.views)
-    .slice(0, 4);
+  const [latestNews, setLatestNews] = useState<NewsArticle[]>([]);
+  const [popularNews, setPopularNews] = useState<NewsArticle[]>([]);
+  const [categories, setCategories] = useState<any[]>([]);
   const { pathname } = useLocation();
   const savePosition = useScrollStore((state) => state.savePosition);
   const getPosition = useScrollStore((state) => state.getPosition);
   const { language } = useTheme();
+  const [weatherData, setWeatherData] = useState<any>();
 
   const texts = {
     uz: {
@@ -41,21 +41,76 @@ const Index = () => {
 
   const t = texts[language];
 
-  // Например, при уходе со страницы — сохраняем скролл
+  const fetchWeatherData = useCallback(async () => {
+    return new Promise((resolve, reject) => {
+        if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            async (position) => {
+              const { latitude, longitude } = position.coords;
+              try {
+              const data = await fetchWeather(latitude, longitude);
+              resolve(data);
+              } catch (fetchError) {
+                console.error("Error fetching weather data:", fetchError);
+              reject(fetchError);
+              }
+            },
+            (error) => {
+              console.error("Error getting location:", error);
+            reject(error);
+            }
+          );
+        } else {
+          console.log("Geolocation is not supported by this browser.");
+        reject(new Error("Geolocation not supported"));
+        }
+    });
+    }, []);
+    
+    const { data: weatherDataQuery } = useQuery({
+      queryKey: ['weather'],
+      queryFn: () => fetchWeatherData(),
+      staleTime: 1000 * 60 * 30, // 5 minutes
+    gcTime: 1000 * 60 * 40, // 10 minutes
+    retry: 1,
+  });
+  
+  useEffect(() => {
+    if (weatherDataQuery) setWeatherData(weatherDataQuery);
+  }, [weatherDataQuery]);
+
+  // Save scroll position on unmount
   useEffect(() => {
     return () => {
       savePosition(pathname, window.scrollY);
     };
-  }, [pathname]);
-
-  // При открытии — возвращаем на старую позицию
+  }, [pathname, savePosition]);
+  // Restore scroll position on mount
   useEffect(() => {
     window.scrollTo(0, getPosition(pathname));
-  }, []);
+  }, [getPosition, pathname]);
 
   useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 1000);
-    return () => clearTimeout(timer);
+    let mounted = true;
+    (async () => {
+      try {
+        const { fetchCategories } = await import('@/data/fetchData');
+        const [articles, cats] = await Promise.all([
+          fetchNews(),
+          fetchCategories()
+        ]);
+        if (mounted) {
+          setCategories(cats);
+          setLatestNews(articles.slice(0, 6));
+          setPopularNews([...articles].sort((a, b) => b.views - a.views).slice(0, 4));
+          setLoading(false);
+        }
+      } catch (err) {
+        console.error('Failed to load news', err);
+        if (mounted) setLoading(false);
+      }
+    })();
+    return () => { mounted = false };
   }, []);
 
   if (loading) {
@@ -114,11 +169,11 @@ const Index = () => {
     <MainLayout>
       <div className="container mx-auto px-4 py-6 space-y-8">
         {/* Hero Carousel */}
-        <HeroCarousel />
+        <HeroCarousel categories={categories} />
 
         {/* Weather & Currency */}
         <div className="grid md:grid-cols-2 gap-4">
-          <WeatherWidget />
+          <WeatherWidget data={weatherData}/>
           <CurrencyWidget />
         </div>
 
@@ -153,7 +208,7 @@ const Index = () => {
           </div>
         </section>
 
-        <Footer />
+        <Footer categories={categories}/>
       </div>
     </MainLayout>
   );

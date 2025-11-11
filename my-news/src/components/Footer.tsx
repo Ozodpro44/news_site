@@ -1,85 +1,102 @@
 import { Link } from "react-router-dom";
+import { useTheme } from "@/contexts/ThemeContext";
+import { ApiCategory } from "@/data/fetchData";
 
-export const Footer = () => {
+interface FooterProps {
+  categories: ApiCategory[];
+}
+
+export const Footer = ({categories}: FooterProps) => {
   const currentYear = new Date().getFullYear();
+  const {language} = useTheme();
+
+  const texts = {
+    uz: {
+      platform: "Platforma",
+      aboutUs: "Biz haqimizda",
+      contact: "Aloqa",
+      advertising: "Reklama",
+      categories: "Kategoriyalar",
+      users: "Foydalanuvchilar",
+      saved: "Saqlangan",
+      settings: "Sozlamalar",
+      additional: "Qo'shimcha",
+      termsOfUse: "Foydalanish shartlari",
+      privacyPolicy: "Maxfiylik siyosati",
+      allRightsReserved: "Barcha huquqlar himoyalangan."
+    },
+    kr: {
+      platform: "Платформа",
+      aboutUs: "Биз ҳақимизда",
+      contact: "Алоқа",
+      advertising: "Реклама",
+      categories: "Категориялар",
+      users: "Фойдаланувчилар",
+      saved: "Сақланган",
+      settings: "Созламалар",
+      additional: "Қўшимча",
+      termsOfUse: "Фойдаланиш шартлари",
+      privacyPolicy: "Махфийлик сиёсати",
+      allRightsReserved: "Барча ҳуқуқлар ҳимояланган."
+    }
+  }
+
+  const t = texts[language]
 
   return (
     <footer className="border-t bg-card mt-12">
       <div className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-8 mb-8">
           <div>
-            <h3 className="font-semibold mb-3">Platforma</h3>
+            <h3 className="font-semibold mb-3">{t.platform}</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li>
                 <Link to="/about" className="hover:text-foreground transition-colors">
-                  Biz haqimizda
+                  {t.aboutUs}
                 </Link>
               </li>
               <li>
                 <Link to="/contact" className="hover:text-foreground transition-colors">
-                  Aloqa
+                  {t.contact}
                 </Link>
               </li>
               <li>
                 <Link to="/advertising" className="hover:text-foreground transition-colors">
-                  Reklama
+                  {t.advertising}
                 </Link>
               </li>
             </ul>
           </div>
           <div>
-            <h3 className="font-semibold mb-3">Kategoriyalar</h3>
+            <h3 className="font-semibold mb-3">{t.categories}</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li>
-                <Link to="/category/jamiyat" className="hover:text-foreground transition-colors">
-                  Jamiyat
+              {categories.slice(-4).map((category) => (
+                <li key={category.id}>
+                  <Link to={`/category/${category.slug}`} className="hover:text-foreground transition-colors">
+                    {language === 'uz' ? category.name_uz : category.name_kr}
                 </Link>
               </li>
-              <li>
-                <Link to="/category/texnologiya" className="hover:text-foreground transition-colors">
-                  Texnologiya
-                </Link>
-              </li>
-              <li>
-                <Link to="/category/sport" className="hover:text-foreground transition-colors">
-                  Sport
-                </Link>
-              </li>
+              ))}
             </ul>
           </div>
           <div>
-            <h3 className="font-semibold mb-3">Foydalanuvchilar</h3>
+            <h3 className="font-semibold mb-3">{t.users}</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li>
                 <Link to="/saved" className="hover:text-foreground transition-colors">
-                  Saqlangan
+                  {t.saved}
                 </Link>
               </li>
               <li>
                 <Link to="/settings" className="hover:text-foreground transition-colors">
-                  Sozlamalar
+                  {t.settings}
                 </Link>
-              </li>
-            </ul>
-          </div>
-          <div>
-            <h3 className="font-semibold mb-3">Qo'shimcha</h3>
-            <ul className="space-y-2 text-sm text-muted-foreground">
-              <li>
-                <a href="#" className="hover:text-foreground transition-colors">
-                  Foydalanish shartlari
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-foreground transition-colors">
-                  Maxfiylik siyosati
-                </a>
               </li>
             </ul>
           </div>
         </div>
         <div className="border-t pt-6 text-center text-sm text-muted-foreground">
-          <p>© {currentYear} News Platform. Barcha huquqlar himoyalangan.</p>
+          <p>© {currentYear} Chust24/7. {t.allRightsReserved}</p>
         </div>
       </div>
     </footer>

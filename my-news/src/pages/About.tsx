@@ -21,7 +21,7 @@ const About = () => {
       ourGoal: "Bizning maqsadimiz",
       ourTeam: "Bizning jamoa",
       ourValues: "Bizning qadriyatlarimiz",
-      aboutUsText: "Chust 24/7 - O'zbekiston va dunyo bo'ylab eng muhim yangiliklar va voqealarni tez va ishonchli tarzda yetkazib beruvchi zamonaviy axborot portali. Biz har bir foydalanuvchiga sifatli, tahliliy va ob'ektiv ma'lumot taqdim etishga intilamiz.",
+      aboutUsText: "Chust 24/7 – O'zbekiston va dunyo bo‘ylab eng muhim yangiliklar va voqealarni tez, aniq va ishonchli tarzda yetkazib beruvchi zamonaviy axborot portali. Sayt “XAQIQAT XABARLARI XIZMATI” MCHJ tomonidan yuritiladi.\n\n• Tashkilot: “XAQIQAT XABARLARI XIZMATI” MCHJ\n• Manzil: Namangan viloyati, Chust tumani, Пансaда MFY, Boboraxim Mashrab ko‘chasi, 91-uy\n\nBiz foydalanuvchilarga sifatli, tahliliy va ob’ektiv ma'lumot taqdim etishga intilamiz.",
       ourTeamText: "Bizning jamoamiz tajribali jurnalistlar, muharrirlar va texnologiya mutaxassislaridan iborat. Har bir yangilik ehtiyotkorlik bilan tayyorlanadi va tasdiqlanadi. Biz professional standartlarga rioya qilishga va auditoriyamizga ishonchli ma'lumot berishga alohida e'tibor beramiz.",
       ourValuesText: "• Ishonchlilik: Faqat tasdiklangan va to'g'ri ma'lumotlar\n• Ob'ektivlik: Xolislik va barcha nuqtai nazarlarni ko'rsatish\n• Tezkorlik: Muhim voqealarni darhol yetkazib berish\n• Sifat: Yuqori darajadagi jurnalistika standartlari",
     },
@@ -31,7 +31,7 @@ const About = () => {
       ourGoal: "Бизнинг мақсадимиз",
       ourTeam: "Бизнинг жамоа",
       ourValues: "Бизнинг қадриятларимиз",
-      aboutUsText: "Чуст 24/7 - Ўзбекистон ва дунё бўйлаб энг муҳим янгиликлар ва воқеаларни тез ва ишончли тарзда етказиб берувчи замонавий ахборот портали. Биз ҳар бир фойдаланувчига сифатли, таҳлилий ва объектив маълумот тақдим этишга интиламиз.",
+      aboutUsText: "Chust 24/7 – Ўзбекистон ва дунё бўйлаб энг муҳим янгиликлар ва воқеаларни тез, аниқ ва ишончли тарзда етказиб берувчи замонавий ахборот портали. Сайт “XАҚИҚАТ ХАБАРЛАРИ ХИЗМАТИ” МЧЖ томонидан юритилади.\n\n• Ташкилот: “XAQIQAT XABARLARI XIZMATI” МЧЖ\n• Манзил: Наманган вилояти, Чуст тумани, Пансада МФЙ, Боборахим Машраб кўчаси, 91-уй\n\nБиз фойдаланувчиларга сифатли, таҳлилий ва объектив маълумот тақдим этишга интиламиз.",
       ourTeamText: "Бизнинг жамоамиз тажрибали журналистлар, муҳаррирлар ва технология мутахассисларидан иборат. Ҳар бир янгилик эҳтиёткорлик билан тайёрланади ва тасдиқланади. Биз профессионал стандартларга риоя қилишга ва аудиториямизга ишончли маълумот беришга алоҳида эътибор берамиз.",
       ourValuesText: "• Ишончлилик: Фақат тасдиқланган ва тўғри маълумотлар\n• Объективлик: Холислик ва барча нуқтаи назарларни кўрсатиш\n• Тезкорлик: Муҳим воқеаларни дарҳол етказиб бериш\n• Сифат: Юқори даражадаги журналистика стандартлари",
     }
@@ -69,7 +69,7 @@ const About = () => {
               <Target className="h-8 w-8 text-primary flex-shrink-0" />
               <div>
                 <h2 className="text-2xl font-semibold mb-3">{t.ourGoal}</h2>
-                <p className="text-muted-foreground leading-relaxed">
+                <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
                   {t.aboutUsText}
                 </p>
               </div>

@@ -4,26 +4,28 @@ import { MainLayout } from "@/components/layout/MainLayout";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { NewsCard } from "@/components/news/NewsCard";
-import { fetchNewsById, fetchRelatedNews, likeArticle, unlikeArticle } from "@/data/fetchData";
+import { fetchNewsBySlug, fetchRelatedNews, likeArticle, unlikeArticle } from "@/data/fetchData";
 import { ArrowLeft, Heart, Eye, Clock } from "lucide-react";
-import { useLikes } from "@/hooks/useLikes"; // import { useToast } from "@/hooks/use-toast";
+import { useLikes } from "@/hooks/useLikes";
 import { formatDistanceToNow } from "date-fns";
-import { uz } from "date-fns/locale";
-import { AdBlock } from "@/components/home/AdBlock";
+import { uz, uzCyrl } from "date-fns/locale";
 import { Button } from "@/components/ui/button";
+import { Helmet } from "react-helmet-async";
 import { useTheme } from "@/contexts/ThemeContext";
-// import { useToast } from "@/hooks/use-toast";
+import { useCategories } from "@/contexts/CategoriesContext";
 
 const SingleNews = () => {
   const { language} = useTheme();
-  window.scrollTo(0, 0);
-  const { id } = useParams<{ id: string }>();
+  const { day, month, year, slug } = useParams<{ day: string; month: string; year: string; slug: string; }>();
   const [loading, setLoading] = useState(true);
   const { isLiked, toggleLike } = useLikes();
   const [article, setArticle] = useState<any>(null);
+  const { getCategoryName } = useCategories();
   const [relatedNews, setRelatedNews] = useState<any[]>([])
   const liked = isLiked(article?.id);
   const [copied, setCopied] = useState(false);
+  // const localDate = new Date(article.date);
+  //   localDate.setHours(localDate.getHours() + 5);
   const texts = {
     uz: {
       notFound : "Yangilik topilmadi",
@@ -32,6 +34,7 @@ const SingleNews = () => {
       breaking : "Tezkor",
       shareSuccess : "Nusxa olindi",
       share : "Ulashish",
+      viewed : "ko'rildi"
     },
     kr: {
       notFound : "Yангилик топилмади",
@@ -40,24 +43,27 @@ const SingleNews = () => {
       breaking : "Тезкор",
       shareSuccess : "Копияланди",
       share : "Улашиш",
+      viewed : "кўрилди"
     }
   };
   
   const t = texts[language];
-
+  
   useEffect(() => {
+    window.scrollTo(0, 0);
     const fetchData = async () => {
       setLoading(true);
-      const news = await fetchNewsById(id);
+      const news = await fetchNewsBySlug(parseInt(day), parseInt(month), parseInt(year), slug);
       setArticle(news);
       if (news) {
-        const relateds = await fetchRelatedNews(news.id, news.category, 3);
+        const relateds = await fetchRelatedNews(news.id, news.category_id, 3);
         setRelatedNews(relateds);
       }
+   // Initialize likes after fetching the article
       setLoading(false);
     };
     fetchData();
-  }, [id]);
+  }, [day, month, year, slug]);
 
   if (!article && !loading) {
     return (
@@ -75,8 +81,8 @@ const SingleNews = () => {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: article?.title || "Chust 24/7",
-          text: article?.title || "Yangiliklarni Chust 24/7 saytidan o'qing",
+          title: article?.title_uz || "Chust 24/7",
+          text: article?.title_uz || "Yangiliklarni Chust 24/7 saytidan o'qing",
           url,
         });
       } catch (err) {
@@ -109,12 +115,19 @@ const SingleNews = () => {
 
   const handleLike = async (id: string) => { // eslint-disable-next-line react-hooks/exhaustive-deps
     await (liked ? unlikeArticle(id) : likeArticle(id));
+    setArticle((prevArticle) => ({
+      ...prevArticle,
+      likes: liked ? prevArticle.likes - 1 : prevArticle.likes + 1,
+    }));
     toggleLike(id); // Update the local state after the API call
-    // Optionally, refetch the article to update like count
-    fetchNewsById(id).then((news) => setArticle(news));
+    
   };
 
-  const timeAgo = article?.date ? formatDistanceToNow(new Date(article.date), { addSuffix: true, locale: uz }) : '';
+  const localDate = article?.date ? new Date(article.date) : null;
+  if (localDate) localDate.setHours(localDate.getHours() + 5);
+
+  const timeAgouz = localDate ? formatDistanceToNow(localDate, { addSuffix: true, locale: uz }) : '';
+  const timeAgokr = localDate ? formatDistanceToNow(localDate, { addSuffix: true, locale: uzCyrl }) : '';
 
   if (loading) {
     return (
@@ -167,6 +180,45 @@ const SingleNews = () => {
 
   return (
     <MainLayout>
+      <Helmet>
+        <title>{language === "uz" ? article.title_uz : article.title_kr || article.title_uz}</title>
+
+        <meta
+          name="description"
+          content={
+            (language === "uz"
+              ? article.content_uz
+              : article.content_kr || article.content_uz
+            )?.substring(0, 50)
+          }
+        />
+
+        {article.hashtags?.length > 0 && (
+          <meta name="keywords" content={article.hashtags.join(", ")} />
+        )}
+
+        <meta
+          property="og:title"
+          content={language === "uz" ? article.title_uz : article.title_kr || article.title_uz}
+        />
+
+        <meta
+          property="og:description"
+          content={
+            (language === "uz"
+              ? article.content_uz
+              : article.content_kr || article.content_uz
+            )?.substring(0, 50)
+          }
+        />
+
+        <meta property="og:image" content={article.preview || article.images?.[0]} />
+        <meta property="og:type" content="article" />
+        <meta property="og:url" content={window.location.href} />
+
+        <meta name="twitter:card" content="summary_large_image" />
+      </Helmet>
+
       <article className="container mx-auto px-4 py-6 max-w-4xl">
         {/* Back Button */}
         <Link to="/">
@@ -179,24 +231,24 @@ const SingleNews = () => {
         {/* Article Header */}
         <div className="mb-6">
           <div className="flex items-center gap-2 mb-4">
-            <Badge variant="secondary">{article.category}</Badge>
+            <Badge variant="secondary">{getCategoryName(article.category_id, language)}</Badge>
             {article.isBreaking && (
               <Badge className="bg-breaking text-white">{t.breaking}</Badge>
             )}
           </div>
           
           <h1 className="text-3xl md:text-4xl font-bold mb-4 text-balance">
-            {article.title}
+            {language === 'uz' ? article.title_uz : article.title_kr}
           </h1>
 
           <div className="flex items-center gap-4 text-sm text-muted-foreground mb-6">
             <span className="flex items-center gap-1">
               <Clock className="h-4 w-4" />
-              {timeAgo}
+              {language === 'uz' ? timeAgouz : timeAgokr}
             </span>
             <span className="flex items-center gap-1">
               <Eye className="h-4 w-4" />
-              {article.views.toLocaleString()} ko'rildi
+              {article.views.toLocaleString()} {t.viewed}
             </span>
           </div>
 
@@ -235,7 +287,7 @@ const SingleNews = () => {
         {article.videoUrl && (
           <div className="mb-6 aspect-video">
             <iframe
-              src={article.videoUrl}
+              src={article.video_url}
               className="w-full h-full rounded-lg"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
@@ -246,7 +298,7 @@ const SingleNews = () => {
         {/* Article Content */}
         <div className="mb-6">
           <p className="whitespace-pre-line">
-          {article.content}
+          {language === 'uz' ? article.content_uz : article.content_kr}
           </p>
         </div>
 

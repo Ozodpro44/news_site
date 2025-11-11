@@ -1,13 +1,31 @@
 import { TrendingUp, TrendingDown, DollarSign } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { useEffect, useState } from "react";
+import { fetchCurrency, GetCurrency } from "@/data/fetchData";
+import { useQuery } from "@tanstack/react-query";
 
 export const CurrencyWidget = () => {
-  // Mock data - in real app, fetch from API
-  const currencies = [
-    { code: "USD", rate: 12650, change: 0.5, trend: "up" },
-    { code: "EUR", rate: 13820, change: -0.3, trend: "down" },
-    { code: "RUB", rate: 135, change: 0.1, trend: "up" },
-  ];
+  const [currencies, setCurrencies] = useState<any>();
+
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ['currency'],
+    queryFn: fetchCurrency,
+    staleTime: 1000 * 60 * 30, // 1 hour
+    gcTime: 1000 * 60 * 40, // 24 hours
+    retry: 1,
+  });
+
+  useEffect(() => {
+    if (data) {
+        setCurrencies(data);
+      }
+  }, [data]);
+
+  const currencis = currencies ? [
+    { code: "USD", rate: Math.round(Number(currencies.usd)), change: 0, trend: "up" }, // Assuming change and trend are hardcoded for now
+    { code: "EUR", rate: Math.round(Number(currencies.eur)), change: 0, trend: "up" },
+    { code: "RUB", rate: Math.round(Number(currencies.rub)), change: 0, trend: "up" },
+  ] : [];
 
   return (
     <Card className="p-4">
@@ -16,8 +34,12 @@ export const CurrencyWidget = () => {
         <h3 className="font-semibold">Valyuta kursi</h3>
       </div>
       
+      {isLoading && <p>Loading currency data...</p>}
+      {isError && <p className="text-red-500">Error loading currency data.</p>}
+
+      {!isLoading && !isError && currencis.length > 0 && (
       <div className="space-y-2">
-        {currencies.map((currency) => (
+        {currencis.map((currency) => (
           <div key={currency.code} className="flex items-center justify-between py-1">
             <div className="flex items-center gap-3">
               <span className="font-bold text-sm w-10">{currency.code}</span>
@@ -42,6 +64,7 @@ export const CurrencyWidget = () => {
           </div>
         ))}
       </div>
+      )}
     </Card>
   );
 };

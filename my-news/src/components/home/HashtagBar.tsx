@@ -1,11 +1,26 @@
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
-import { trendingHashtags } from "@/data/mockNews";
+import { fetchTrendingHashtags } from "@/data/fetchData";
 import { TrendingUp } from "lucide-react";
 import { useTheme } from "@/contexts/ThemeContext"
 
 export const HashtagBar = () => {
   const { language } = useTheme();
+  const [trendingHashtags, setTrendingHashtags] = useState<{ tag: string; count: number }[]>([]);
+  
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        const tags = await fetchTrendingHashtags();
+        if (mounted) setTrendingHashtags(tags);
+      } catch (err) {
+        console.error('Failed to load trending hashtags', err);
+      }
+    })();
+    return () => { mounted = false };
+  }, []);
   const texts = {
     uz: {
       trend: "Trendda",
@@ -23,13 +38,13 @@ export const HashtagBar = () => {
         <h3 className="font-semibold">{t.trend}</h3>
       </div>
       <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-        {trendingHashtags.map((tag) => (
-          <Link key={tag} to={`/search?q=${encodeURIComponent(tag)}`}>
+        {trendingHashtags.map((item) => (
+          <Link key={item.tag} to={`/search?q=${encodeURIComponent(item.tag)}`}>
             <Badge
               variant="secondary"
               className="whitespace-nowrap hover:bg-primary hover:text-primary-foreground transition-colors cursor-pointer"
             >
-              #{tag}
+              #{item.tag} <span className="ml-1 text-xs opacity-70">({item.count})</span>
             </Badge>
           </Link>
         ))}

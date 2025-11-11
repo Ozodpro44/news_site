@@ -24,7 +24,7 @@ const Contact = () => {
       yourEmail: "Email",
       subject: "Mavzu",
       message: "Xabar",
-      addressText: "Toshkent shahri, Yunusobod tumani, Amir Temur ko'chasi, 123-uy",
+      addressText: "Namangan viloyati, Chust tumani, Pansada MFY, Boboraxim Mashrab ko‘chasi, 91-uy",
     },
     kr: {
       back: "Орқага",
@@ -37,7 +37,7 @@ const Contact = () => {
       yourEmail: "Email",
       subject: "Мавзу",
       message: "Хабар",
-      addressText: "Тошкент шаҳри, Юнусобод тумани, Амир Темур кўчаси, 123-уй",
+      addressText: "Наманган вилояти, Чуст тумани, Пансада МФЙ, Боборахим Машраб кўчаси, 91-уй",
     }
   };
 
