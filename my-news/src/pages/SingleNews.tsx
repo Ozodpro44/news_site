@@ -287,7 +287,7 @@ const SingleNews = () => {
         {article.videoUrl && (
           <div className="mb-6 aspect-video">
             <iframe
-              src={article.video_url}
+              src={article.videoUrl}
               className="w-full h-full rounded-lg"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
