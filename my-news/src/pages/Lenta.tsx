@@ -35,12 +35,12 @@ const Lenta = () => {
   const t = texts[language]; // Default to Uzbek, modify as needed
 
 
-  const sortedNews = [...news].sort((a, b) => {
-    if (sortBy === "latest") {
-      return new Date(b.date).getTime() - new Date(a.date).getTime();
-    }
-    return b.views - a.views;
-  });
+  // const sortedNews = [...news].sort((a, b) => {
+  //   if (sortBy === "latest") {
+  //     return new Date(b.date).getTime() - new Date(a.date).getTime();
+  //   }
+  //   return b.views - a.views;
+  // });
 
   useEffect(() => {
     const loadNews = async () => {
@@ -119,7 +119,7 @@ const Lenta = () => {
           <>
             {/* News Feed */}
             <div className="grid md:grid-cols-2 gap-6">
-              {sortedNews.map((article) => (
+              {news.map((article) => (
                 <NewsCard key={article.id} article={article} variant="horizontal" />
               ))}
             </div>
