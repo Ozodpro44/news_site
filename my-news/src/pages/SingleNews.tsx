@@ -123,6 +123,19 @@ const SingleNews = () => {
     
   };
 
+  const convertToEmbed = (url: string) => {
+    let videoId = "";
+
+    if (url.includes("youtu.be/")) {
+      videoId = url.split("youtu.be/")[1].split("?")[0];
+    } else if (url.includes("watch?v=")) {
+      videoId = url.split("watch?v=")[1].split("&")[0];
+    }
+
+    return `https://www.youtube.com/embed/${videoId}`;
+  };
+
+
   const localDate = article?.date ? new Date(article.date) : null;
   if (localDate) localDate.setHours(localDate.getHours() + 5);
 
@@ -287,7 +300,7 @@ const SingleNews = () => {
         {article.videoUrl && (
           <div className="mb-6 aspect-video">
             <iframe
-              src={article.videoUrl}
+              src={convertToEmbed(article.videoUrl)}
               className="w-full h-full rounded-lg"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
@@ -333,3 +346,4 @@ const SingleNews = () => {
 };
 
 export default SingleNews;
+
