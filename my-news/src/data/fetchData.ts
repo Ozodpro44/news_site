@@ -293,9 +293,7 @@ export async function fetchLenta(sortBy: string, limit?: number, offset?: number
   if (limit) params.append('limit', limit.toString());
   if (offset) params.append('offset', offset.toString());
 
-  // The backend expects 'limit' and 'offset' as query parameters, and 'sortBy' as a path parameter.
-  // The original code was incorrectly passing 'sortBy' as a query parameter.
-  const articles = await request<ApiArticle[]>(`/viewer/articles/lenta/${sortBy}?${params.toString()}`);
+  const articles = await request<ApiArticle[]>(`/viewer/articles/limit?sortBy=${sortBy}&${params.toString()}`);
   return articles.map(article => transformArticle(article));
 }
 
