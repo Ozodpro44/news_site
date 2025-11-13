@@ -137,7 +137,7 @@ const SingleNews = () => {
 
 
   const localDate = article?.date ? new Date(article.date) : null;
-  if (localDate) localDate.setHours(localDate.getHours() + 5);
+  if (localDate) localDate.setHours(localDate.getHours() - 5);
 
   const timeAgouz = localDate ? formatDistanceToNow(localDate, { addSuffix: true, locale: uz }) : '';
   const timeAgokr = localDate ? formatDistanceToNow(localDate, { addSuffix: true, locale: uzCyrl }) : '';

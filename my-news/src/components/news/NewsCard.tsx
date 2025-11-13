@@ -25,7 +25,7 @@
     const liked = isLiked(currentArticle.id);
     const categoryName = getCategoryName(currentArticle.category_id, language); 
     const localDate = new Date(currentArticle.date);
-    localDate.setHours(localDate.getHours() + 5);
+    localDate.setHours(localDate.getHours() - 5);
 
     const timeAgo = formatDistanceToNow(new Date(currentArticle.date), {
       addSuffix: true,
