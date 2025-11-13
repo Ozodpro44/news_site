@@ -126,7 +126,7 @@ const Index = () => {
       <MainLayout>
         <div className="container mx-auto px-4 py-6 space-y-8">
           {/* Hero Skeleton */}
-          <Skeleton className="w-full h-[500px] md:h-[600px] rounded-2xl" />
+          <Skeleton className="w-full h-[400px] md:h-[600px] rounded-2xl" />
 
           {/* Weather & Currency Skeleton */}
           <div className="grid md:grid-cols-2 gap-4">
