@@ -24,13 +24,10 @@
     const { language } = useTheme();
     const liked = isLiked(currentArticle.id);
     const categoryName = getCategoryName(currentArticle.category_id, language); 
-    const localDate = new Date(currentArticle.date);
-    localDate.setHours(localDate.getHours() - 10);
+    const localDate = article?.date ? new Date(currentArticle.date) : null;
+    if (localDate) localDate.setHours(localDate.getHours() - 5);
 
-    const timeAgo = formatDistanceToNow(new Date(currentArticle.date), {
-      addSuffix: true,
-      locale: uz,
-    });
+    const timeAgo = localDate ? formatDistanceToNow(localDate, { addSuffix: true, locale: uz }) : '';
     
     const handleLike = async (id: string) => {
       try {
