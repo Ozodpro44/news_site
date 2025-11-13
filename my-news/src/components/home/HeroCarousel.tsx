@@ -50,7 +50,7 @@ export const HeroCarousel = ({categories}: HeroCarouselProps) => {
   const goToNext = () => {
     setCurrentSlide(prev => (prev + 1) % heroNews.length);
   };
-  if (heroNews.length === 0) return (<Skeleton className="w-full h-[500px] md:h-[600px] rounded-2xl" />);
+  if (heroNews.length === 0) return (<Skeleton className="w-full h-[400px] md:h-[600px] rounded-2xl" />);
   const current = heroNews[currentSlide];
   return <div className="relative w-full h-[400px] md:h-[600px] overflow-hidden rounded-2xl bg-muted">
       {/* Background Image with Overlay */}
