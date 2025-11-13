@@ -42,30 +42,31 @@ const Index = () => {
   const t = texts[language];
 
   const fetchWeatherData = useCallback(async () => {
-    return new Promise((resolve, reject) => {
-        if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-            async (position) => {
-              const { latitude, longitude } = position.coords;
-              try {
-              const data = await fetchWeather(latitude, longitude);
-              resolve(data);
-              } catch (fetchError) {
-                console.error("Error fetching weather data:", fetchError);
-              reject(fetchError);
-              }
-            },
-            (error) => {
-              console.error("Error getting location:", error);
-            reject(error);
-            }
-          );
-        } else {
-          console.log("Geolocation is not supported by this browser.");
-        reject(new Error("Geolocation not supported"));
+  if (!navigator.geolocation) {
+    throw new Error("Geolocation not supported");
+  }
+
+  return new Promise((resolve, reject) => {
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        try {
+          const { latitude, longitude } = position.coords;
+          const data = await fetchWeather(latitude, longitude);
+          resolve(data);
+        } catch (fetchError) {
+          reject(fetchError);
         }
-    });
-    }, []);
+      },
+      (error) => {
+        reject(error);
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 5000,
+      }
+    );
+  });
+  }, []);
     
     const { data: weatherDataQuery } = useQuery({
       queryKey: ['weather'],
