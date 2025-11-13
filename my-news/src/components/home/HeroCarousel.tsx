@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { ApiCategory, fetchBreakingNews, fetchTrendingNews, NewsArticle } from "@/data/fetchData";
 import { useTheme } from "@/contexts/ThemeContext";
 import { Skeleton } from "../ui/skeleton";
+import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 
 interface HeroCarouselProps {
@@ -17,24 +18,23 @@ export const HeroCarousel = ({categories}: HeroCarouselProps) => {
   const [heroNews, setHeroNews] = useState<NewsArticle[]>([]);
   const { language } = useTheme();
   
-  useEffect(() => {
-    let mounted = true;
-    (async () => {
-      try {
+  const { data: heroNewsData } = useQuery({
+    queryKey: ['heroNews'],
+    queryFn: async () => {
         const [breaking, trending] = await Promise.all([
           fetchBreakingNews(3),
           fetchTrendingNews(2)
         ]);
-        if (mounted) {
-          const combined = [...breaking, ...trending].slice(0, 5);
-          setHeroNews(combined);
-        }
-      } catch (err) {
-        console.error('Failed to load hero news', err);
-      }
-    })();
-    return () => { mounted = false };
-  }, []);
+      return [...breaking, ...trending].slice(0, 5);
+    },
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    gcTime: 1000 * 60 * 10, // 10 minutes
+  });
+
+  useEffect(() => {
+    if (heroNewsData) setHeroNews(heroNewsData);
+  }, [heroNewsData]);
+
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentSlide(prev => (prev + 1) % heroNews.length);

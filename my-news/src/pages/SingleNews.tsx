@@ -5,9 +5,9 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { NewsCard } from "@/components/news/NewsCard";
 import { fetchNewsBySlug, fetchRelatedNews, likeArticle, unlikeArticle } from "@/data/fetchData";
-import { ArrowLeft, Heart, Eye, Clock } from "lucide-react";
+import { ArrowLeft, Heart, Eye, Clock, Share2 } from "lucide-react";
 import { useLikes } from "@/hooks/useLikes";
-import { formatDistanceToNow } from "date-fns";
+import { format} from "date-fns";
 import { uz, uzCyrl } from "date-fns/locale";
 import { Button } from "@/components/ui/button";
 import { Helmet } from "react-helmet-async";
@@ -139,8 +139,8 @@ const SingleNews = () => {
   const localDate = article?.date ? new Date(article.date) : null;
   if (localDate) localDate.setHours(localDate.getHours() - 5);
 
-  const timeAgouz = localDate ? formatDistanceToNow(localDate, { addSuffix: true, locale: uz }) : '';
-  const timeAgokr = localDate ? formatDistanceToNow(localDate, { addSuffix: true, locale: uzCyrl }) : '';
+  const timeAgouz = localDate ? format(localDate, 'dd MMMM, HH:mm', { locale: uz }) : '';
+  const timeAgokr = localDate ? format(localDate, 'dd MMMM, HH:mm', { locale: uzCyrl }) : '';
 
   if (loading) {
     return (
@@ -279,6 +279,7 @@ const SingleNews = () => {
               {article.likes}
             </Button>
             <Button variant="outline" size="sm" onClick={copyUrl} disabled={copied}>
+              <Share2 className="h-4 w-4 mr-2"/>
               {copied ? t.shareSuccess : t.share}
             </Button>
           </div>

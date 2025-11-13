@@ -48,7 +48,7 @@ const About = () => {
 
   // При открытии — возвращаем на старую позицию
   useEffect(() => {
-    window.scrollTo(0, getPosition(pathname));
+    window.scrollTo(0, 0);
   }, []);
 
   return (

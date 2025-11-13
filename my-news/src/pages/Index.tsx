@@ -41,31 +41,42 @@ const Index = () => {
 
   const t = texts[language];
 
-  const fetchWeatherData = useCallback(async () => {
-  if (!navigator.geolocation) {
-    throw new Error("Geolocation not supported");
-  }
+  useEffect(() => {
+    return () => {
+      savePosition("h", window.scrollY);
+    };
+  }, []);
 
-  return new Promise((resolve, reject) => {
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        try {
-          const { latitude, longitude } = position.coords;
-          const data = await fetchWeather(latitude, longitude);
-          resolve(data);
-        } catch (fetchError) {
-          reject(fetchError);
+  // При открытии — возвращаем на старую позицию
+  useEffect(() => {
+    window.scrollTo(0, getPosition("h"));
+  }, []);
+
+  const fetchWeatherData = useCallback(async () => {
+    if (!navigator.geolocation) {
+      throw new Error("Geolocation not supported");
+    }
+
+    return new Promise((resolve, reject) => {
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          try {
+            const { latitude, longitude } = position.coords;
+            const data = await fetchWeather(latitude, longitude);
+            resolve(data);
+          } catch (fetchError) {
+            reject(fetchError);
+          }
+        },
+        (error) => {
+          reject(error);
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 5000,
         }
-      },
-      (error) => {
-        reject(error);
-      },
-      {
-        enableHighAccuracy: true,
-        timeout: 5000,
-      }
-    );
-  });
+      );
+    });
   }, []);
     
     const { data: weatherDataQuery } = useQuery({
@@ -81,37 +92,33 @@ const Index = () => {
   }, [weatherDataQuery]);
 
   // Save scroll position on unmount
-  useEffect(() => {
-    return () => {
-      savePosition(pathname, window.scrollY);
-    };
-  }, [pathname, savePosition]);
-  // Restore scroll position on mount
-  useEffect(() => {
-    window.scrollTo(0, getPosition(pathname));
-  }, [getPosition, pathname]);
+ 
+
+  const { data: newsData, isLoading: newsLoading } = useQuery({
+    queryKey: ['allNews'],
+    queryFn: async () => {
+      const { fetchCategories: fetchCategoriesData, fetchNews: fetchNewsData } = await import('@/data/fetchData');
+      const [articles, cats] = await Promise.all([
+        fetchNewsData(),
+        fetchCategoriesData()
+      ]);
+      return { articles, cats };
+    },
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    gcTime: 1000 * 60 * 10, // 10 minutes
+  });
 
   useEffect(() => {
-    let mounted = true;
-    (async () => {
-      try {
-        const { fetchCategories } = await import('@/data/fetchData');
-        const [articles, cats] = await Promise.all([
-          fetchNews(),
-          fetchCategories()
-        ]);
-        if (mounted) {
-          setCategories(cats);
-          setLatestNews(articles.slice(0, 6));
-          setPopularNews([...articles].sort((a, b) => b.views - a.views).slice(0, 4));
+    if (newsData) {
+      setCategories(newsData.cats);
+      setLatestNews(newsData.articles.slice(0, 6));
+      setPopularNews([...newsData.articles].sort((a, b) => b.views - a.views).slice(0, 4));
           setLoading(false);
         }
-      } catch (err) {
-        console.error('Failed to load news', err);
-        if (mounted) setLoading(false);
-      }
-    })();
-    return () => { mounted = false };
+  }, [newsData]);
+
+  useEffect(() => {
+    setLoading(newsLoading);
   }, []);
 
   if (loading) {

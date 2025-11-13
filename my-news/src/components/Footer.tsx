@@ -51,18 +51,13 @@ export const Footer = ({categories}: FooterProps) => {
             <h3 className="font-semibold mb-3">{t.platform}</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li>
-                <Link to="/about" className="hover:text-foreground transition-colors">
+                <Link to="/settings/about" className="hover:text-foreground transition-colors">
                   {t.aboutUs}
                 </Link>
               </li>
               <li>
-                <Link to="/contact" className="hover:text-foreground transition-colors">
+                <Link to="/settings/contact" className="hover:text-foreground transition-colors">
                   {t.contact}
-                </Link>
-              </li>
-              <li>
-                <Link to="/advertising" className="hover:text-foreground transition-colors">
-                  {t.advertising}
                 </Link>
               </li>
             </ul>

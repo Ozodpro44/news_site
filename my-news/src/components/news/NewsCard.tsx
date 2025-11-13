@@ -8,8 +8,8 @@
   import { useLikes } from "@/hooks/useLikes";
   import { useCategories } from "@/contexts/CategoriesContext";
   import { useTheme } from "@/contexts/ThemeContext";
-  import { formatDistanceToNow, format } from "date-fns";
-  import { uz } from "date-fns/locale";
+  import { format, formatDate } from "date-fns";
+  import { uz, uzCyrl } from "date-fns/locale";
   // import { useTheme } from "@/contexts/ThemeContext";
 
   interface NewsCardProps {
@@ -25,9 +25,9 @@
     const liked = isLiked(currentArticle.id);
     const categoryName = getCategoryName(currentArticle.category_id, language); 
     const localDate = article?.date ? new Date(currentArticle.date) : null;
-    if (localDate) localDate.setHours(localDate.getHours() - 5);
-
-    const timeAgo = localDate ? formatDistanceToNow(localDate, { addSuffix: true, locale: uz }) : '';
+    if (localDate) localDate.setHours(localDate.getHours() - 5 );
+    const timeAgouz = localDate ? format(localDate, 'dd MMMM, HH:mm', { locale: uz }) : '';
+    const timeAgokr = localDate ? format(localDate, 'dd MMMM, HH:mm', { locale: uzCyrl }) : '';
     
     const handleLike = async (id: string) => {
       try {
@@ -71,7 +71,7 @@
               <div className="flex items-center gap-4 text-xs text-muted-foreground mt-auto">
                 <span className="flex items-center gap-1">
                   <Clock className="h-3 w-3" />
-                  {timeAgo}
+                  {language === 'uz' ? timeAgouz : timeAgokr}
                 </span>
                 <span className="flex items-center gap-1">
                   <Eye className="h-3 w-3" />
@@ -160,8 +160,8 @@
           <div className="flex items-center gap-2 mb-2">
             <Badge variant="secondary">{categoryName}</Badge>
             <span className="text-xs text-muted-foreground flex items-center gap-1">
-              <Clock className="h-3 w-3" />
-              {timeAgo}
+              <Clock className="h-4 w-4" />
+              {language === 'uz' ? timeAgouz : timeAgokr}
             </span>
           </div>
           <Link to={`/news/${format(new Date(article.date), 'dd/MM/yyyy')}/${article.slug}`}>

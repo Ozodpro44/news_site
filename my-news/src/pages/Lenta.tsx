@@ -13,7 +13,6 @@ const Lenta = () => {
   const [sortBy, setSortBy] = useState<"latest" | "famous">("latest");
   const [news, setNews] = useState<NewsArticle[]>([]);
   const [loadingMore, setLoadingMore] = useState(false);
-  window.scrollTo(0, 0);
 
   const texts = {
     uz: {
@@ -41,9 +40,10 @@ const Lenta = () => {
   //   }
   //   return b.views - a.views;
   // });
-
+  
   useEffect(() => {
     const loadNews = async () => {
+      window.scrollTo(0, 0);
       try {
         setLoading(true);
         const lenta = await fetchLenta(sortBy, 6, 0);
