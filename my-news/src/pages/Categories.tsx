@@ -1,16 +1,14 @@
-import { useState, useEffect } from "react";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { fetchCategories, ApiCategory } from "@/data/fetchData";
+import { useCategories } from "@/data/fetchData";
 import { Link } from "react-router-dom";
 import * as Icons from "lucide-react";
 import { useTheme } from "@/contexts/ThemeContext";
 
 const Categories = () => {
   window.scrollTo(0, 0);
-  const [loading, setLoading] = useState(true);
-  const [categories, setCategories] = useState<ApiCategory[]>([]);
+  const { data: categories, isLoading: loading } = useCategories();
   const { language } = useTheme();
 
   const texts = {
@@ -38,22 +36,6 @@ const Categories = () => {
     return 'FileText';
   };
 
-  useEffect(() => {
-    const loadCategories = async () => {
-      try {
-        setLoading(true);
-        const data = await fetchCategories();
-        setCategories(data);
-      } catch (error) {
-        console.error("Failed to fetch categories:", error);
-        setCategories([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-    loadCategories();
-  }, []);
-
   return (
     <MainLayout>
       <div className="container mx-auto px-4 py-6">
@@ -70,7 +52,7 @@ const Categories = () => {
           </div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {categories.map((category) => {
+            {categories?.map((category) => {
               const categoryName = language === 'uz' ? category.name_uz : category.name_kr;
               const iconName = getIcon(categoryName);
               const Icon = Icons[iconName] as any;

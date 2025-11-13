@@ -4,7 +4,7 @@ import { MainLayout } from "@/components/layout/MainLayout";
 import { NewsCard} from "@/components/news/NewsCard";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { fetchCategories, NewsArticle, ApiCategory, fetchNewsByCategory, useCategories } from "@/data/fetchData";
+import { NewsArticle, ApiCategory, fetchNewsByCategory, useCategories } from "@/data/fetchData";
 import { ArrowLeft } from "lucide-react";
 import { useTheme } from "@/contexts/ThemeContext";
 
@@ -17,6 +17,7 @@ const CategoryDetail = () => {
   const [offset, setOffset] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const { language } = useTheme();
+  const { data: categories, isLoading: categoriesLoading } = useCategories();
 
   const texts = {
     uz: {
@@ -38,28 +39,31 @@ const CategoryDetail = () => {
   const t = texts[language];
 
   useEffect(() => {
-    const loadCategoryData = async () => {
-      try {
-        setLoading(true);
-        const categories = await fetchCategories();
-        const foundCategory = categories.find((c) => c.slug === slug);
-        setCategory(foundCategory || null);
-        
-        if (foundCategory) {
+    if (!categories) return;
+    
+    const foundCategory = categories.find((c) => c.slug === slug);
+    setCategory(foundCategory || null);
+    
+    if (foundCategory) {
+      const loadNews = async () => {
+        try {
+          setLoading(true);
           const news = await fetchNewsByCategory(foundCategory.id, 6, 0);
           setCategoryNews(news);
           setOffset(6);
           setHasMore(news.length === 6);
+        } catch (error) {
+          console.error("Failed to fetch category news:", error);
+          setCategoryNews([]);
+        } finally {
+          setLoading(false);
         }
-      } catch (error) {
-        console.error("Failed to fetch category data:", error);
-        setCategoryNews([]);
-      } finally {
-        setLoading(false);
-      }
+      };
+      loadNews();
+    } else {
+      setLoading(false);
     }
-    loadCategoryData();
-  }, [slug]);
+  }, [slug, categories]);
   
   const loadMoreNews = async () => {
     if (!category) return;
@@ -76,7 +80,7 @@ const CategoryDetail = () => {
       setLoading(false);
     }
   };
-  if (!category && !loading) {
+  if (!category && !loading && !categoriesLoading) {
     return (
       <MainLayout>
         <div className="container mx-auto px-4 py-6">
@@ -100,7 +104,7 @@ const CategoryDetail = () => {
 
         <h1 className="text-3xl font-bold mb-8">{category ? (language === 'uz' ? category.name_uz : category.name_kr) : ''}</h1>
 
-        {loading ? (
+        {(loading || categoriesLoading) ? (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[...Array(6)].map((_, i) => (
               <Skeleton key={i} />
