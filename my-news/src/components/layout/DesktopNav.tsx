@@ -26,7 +26,11 @@ export const DesktopNav = () => {
 
   const t = texts[language];
 
-  const isActive = (path: string) => location.pathname === path;
+  const isActive = (path: string) => {
+    const pathname = location.pathname.replace(/\/$/, '');
+    const checkPath = path.replace(/\/$/, '');
+    return pathname === checkPath;
+  };
 
   return (
     <header className="hidden md:block sticky top-0 z-50 w-full border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60">
@@ -34,7 +38,7 @@ export const DesktopNav = () => {
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
-            <img src="/IMG_0785.PNG" alt="Chust 24/7 Logo" className="h-10 w-autorounded-md object-cover" />
+            <img src="/IMG_0785.PNG" alt="Chust 24/7 Logo" className="h-10 w-autorounded-md object-cover" decoding="async" />
           </Link>
 
           {/* Navigation Links */}

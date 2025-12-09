@@ -1,6 +1,6 @@
   import { Link } from "react-router-dom";
   import { useState } from "react";
-  import { Heart, Eye, Clock } from "lucide-react";
+  import { Heart, Eye, Clock, ImageOff } from "lucide-react";
   import { Card, CardContent } from "@/components/ui/card";
   import { Button } from "@/components/ui/button";
   import { Badge } from "@/components/ui/badge";
@@ -12,6 +12,14 @@
   import { uz, uzCyrl } from "date-fns/locale";
   import { t } from "@/lib/translations";
   // import { useTheme } from "@/contexts/ThemeContext";
+
+  const PLACEHOLDER_IMAGE = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300'%3E%3Crect fill='%23f0f0f0' width='400' height='300'/%3E%3Ctext x='50%25' y='50%25' font-size='16' fill='%23999' text-anchor='middle' dy='.3em'%3EImage not available%3C/text%3E%3C/svg%3E";
+
+  const getImageSrc = (preview: string | null, images: string[] | undefined): string => {
+    if (preview) return preview;
+    if (images && images.length > 0) return images[0];
+    return PLACEHOLDER_IMAGE;
+  };
 
   interface NewsCardProps {
     article: NewsArticle;
@@ -50,12 +58,12 @@
         <Card className="overflow-hidden card-hover p-0">
           <div className="flex flex-col sm:flex-row">
             <Link to={`/news/${format(new Date(article.date), 'dd/MM/yyyy')}/${article.slug}`} className="sm:w-1/3">
-              <img
-                src={article.preview || article.images[0]}
-                alt={language === 'uz' ? article.title_uz : article.title_kr || article.title_uz}
-                className="w-full h-48 sm:h-full object-cover"
-              />
-            </Link>
+               <img
+                 src={getImageSrc(article.preview, article.images)}
+                 alt={language === 'uz' ? article.title_uz : article.title_kr || article.title_uz}
+                 className="w-full h-48 sm:h-full object-cover"
+               />
+             </Link>
             <CardContent className="p-4 sm:w-2/3 flex flex-col">
               <div className="flex items-center gap-2 mb-2">
                 <Badge variant="secondary">{categoryName}</Badge>
@@ -105,12 +113,12 @@
       return (
         <Card className="overflow-hidden card-hover p-0">
         <Link to={`/news/${format(new Date(article.date), 'dd/MM/yyyy')}/${article.slug}`}>
-        <img
-        src={article.preview || article.images[0]}
-        alt={language === 'uz' ? article.title_uz : article.title_kr || article.title_uz}
-        className="w-full h-40 object-cover"
-        />
-        </Link>
+         <img
+         src={getImageSrc(article.preview, article.images)}
+         alt={language === 'uz' ? article.title_uz : article.title_kr || article.title_uz}
+         className="w-full h-40 object-cover"
+         />
+         </Link>
           <CardContent className="p-3">
             <Badge variant="secondary" className="mb-2">
               {categoryName}
@@ -148,7 +156,7 @@
         <Link to={`/news/${format(new Date(article.date), 'dd/MM/yyyy')}/${article.slug}`}>
           <div className="relative">
             <img
-              src={article.preview || article.images[0]}
+              src={getImageSrc(article.preview, article.images)}
               alt={language === 'uz' ? article.title_uz : article.title_kr || article.title_uz}
               className="w-full h-56 object-cover"
             />

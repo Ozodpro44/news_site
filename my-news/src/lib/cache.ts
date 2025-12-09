@@ -13,13 +13,13 @@ const CACHE_PREFIX = 'news_cache_';
 
 // Cache durations (in milliseconds)
 export const CACHE_DURATIONS = {
-  ARTICLES: 1000 * 60 * 5, // 5 minutes
+  ARTICLES: 1000 * 60 * 2, // 2 minutes
   CATEGORIES: 1000 * 60 * 60, // 1 hour
   WEATHER: 1000 * 60 * 10, // 10 minutes
   CURRENCY: 1000 * 60 * 30, // 30 minutes
   HASHTAGS: 1000 * 60 * 60, // 1 hour
-  SEARCH: 1000 * 60 * 5, // 5 minutes
-  SINGLE_ARTICLE: 1000 * 60 * 30, // 30 minutes
+  SEARCH: 1000 * 60 * 2, // 2 minutes
+  SINGLE_ARTICLE: 1000 * 60 * 10, // 10 minutes
 };
 
 /**
