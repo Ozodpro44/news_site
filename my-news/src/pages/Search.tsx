@@ -48,22 +48,21 @@ const Search = () => {
   useEffect(() => {
     const q = searchParams.get("q");
     if (q) {
-      setQuery(q);
+      setQuery(q); // Update query state from URL
       setLoading(true);
-      serchNews();
-      const timer = setTimeout(() => {
-        addToHistory(q);
-        setLoading(false);
-      }, 1000); // Simulate loading and then add to history
-      return () => clearTimeout(timer);
+      searchNews(q); // Call searchNews with the query from URL
     }
     else setLoading(false); // If no query, set loading to false
   }, [searchParams]);
 
-  const serchNews = async () => {
-    const res = await search(query, 10);
-    setSearchResults(res); // Renamed to searchNews for consistency
-  }; // Removed the query parameter from serchNews as it uses the state `query`
+  const searchNews = async (q: string) => {
+    const res = await search(q, 10); // Use the passed query 'q'
+    if (res) {
+      addToHistory(q);
+      setSearchResults(res);
+      setLoading(false);
+    }
+  };
 
   const addToHistory = (term: string) => {
     if (!term.trim()) return;
@@ -77,20 +76,20 @@ const Search = () => {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (query.trim()) {
-      setSearchParams({ q: query });
-      // The actual search and loading state update will be handled by the useEffect
-      // when searchParams change.
+      setSearchParams({ q: query.trim() });
+      setLoading(true); // Set loading to true immediately on search
+      searchNews(query.trim()); // Trigger search
     }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newQuery = e.target.value;
     setQuery(newQuery);
-    if (newQuery.trim()) {
-      setSearchParams({ q: newQuery });
-    } else {
-      setSearchParams({}); // Clear search params if query is empty
-    }
+    // if (newQuery.trim() && searchParams.get("q") !== newQuery) {
+    //   setSearchParams({ q: newQuery });
+    // } else {
+    //   setSearchParams({}); // Clear search params if query is empty
+    // }
   };
 
   const clearHistory = () => {
@@ -117,7 +116,7 @@ const Search = () => {
           </form>
 
           {/* Search History */}
-          {!query && searchHistory.length > 0 && (
+          {!query && searchHistory.length > 0 &&(
             <div className="mt-6">
               <div className="flex items-center justify-between mb-3">
                 <h3 className="font-semibold">{t.searchHistory}</h3>
@@ -149,7 +148,7 @@ const Search = () => {
         {query && (
           <div>
             <p className="text-muted-foreground mb-6">
-              {searchResults.length} {t.searchResults} "{query}" {t.for}
+              {searchResults.length} {t.searchResults}
             </p>
             
             {loading && query ? ( // Only show skeleton if loading and there's a query
