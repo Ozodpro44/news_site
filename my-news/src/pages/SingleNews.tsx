@@ -310,6 +310,7 @@ const SingleNews = () => {
         </div>
 
         {/* Article Images Carousel */}
+        {article.images && article.images.length > 0 && (
         <div className="mb-6">
           <div className="relative bg-gray-200 rounded-lg overflow-hidden aspect-video">
             {/* Peek of previous image */}
@@ -387,9 +388,10 @@ const SingleNews = () => {
             )}
           </div>
         </div>
+        )}
 
         {/* Image Lightbox */}
-        {selectedImage !== null && (
+        {article.images && article.images.length > 0 && selectedImage !== null && (
           <div
             className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4"
             onClick={() => setSelectedImage(null)}
