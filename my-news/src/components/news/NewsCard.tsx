@@ -10,6 +10,7 @@
   import { useTheme } from "@/contexts/ThemeContext";
   import { format, formatDate } from "date-fns";
   import { uz, uzCyrl } from "date-fns/locale";
+  import { t } from "@/lib/translations";
   // import { useTheme } from "@/contexts/ThemeContext";
 
   interface NewsCardProps {
@@ -28,6 +29,8 @@
     if (localDate) localDate.setHours(localDate.getHours() - 5 );
     const timeAgouz = localDate ? format(localDate, 'dd MMMM, HH:mm', { locale: uz }) : '';
     const timeAgokr = localDate ? format(localDate, 'dd MMMM, HH:mm', { locale: uzCyrl }) : '';
+    
+    const breakingText = t('breaking', language);
     
     const handleLike = async (id: string) => {
       try {
@@ -57,7 +60,7 @@
               <div className="flex items-center gap-2 mb-2">
                 <Badge variant="secondary">{categoryName}</Badge>
                 {article.isBreaking && (
-                  <Badge className="bg-breaking text-white">Tezkor</Badge>
+                  <Badge className="bg-breaking text-white">{breakingText}</Badge>
                 )}
               </div>
               <Link to={`/news/${format(new Date(article.date), 'dd/MM/yyyy')}/${article.slug}`}>
@@ -151,7 +154,7 @@
             />
             {article.isBreaking && (
               <Badge className="absolute top-3 right-3 bg-breaking text-white">
-                Tezkor
+                {breakingText}
               </Badge>
             )}
           </div>

@@ -2,13 +2,15 @@ import { useEffect, useState } from "react";
 import { Cloud, CloudRain, Sun, Droplets, Wind, LucideIcon } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "../ui/skeleton";
-// import { fetchWeather } from "@/data/fetchData";
+import { translateWeatherCondition } from "@/data/fetchData";
+import { useTheme } from "@/contexts/ThemeContext";
 
 interface WeatherWidgetProps {
   data: any
 }
 
 export const WeatherWidget = ({data}: WeatherWidgetProps) => {
+  const { language } = useTheme();
   const [weather, setWeather] = useState({
     city: "",
     temp: 0,
@@ -60,7 +62,9 @@ export const WeatherWidget = ({data}: WeatherWidgetProps) => {
         </div>
         
         <div className="flex items-center justify-between">
-          <div className="text-base md:text-lg text-sm font-medium opacity-95">{weather.condition}</div>
+          <div className="text-base md:text-lg text-sm font-medium opacity-95">
+            {translateWeatherCondition(weather.condition, language)}
+          </div>
           
           <div className="flex gap-4 text-sm opacity-90">
             <div className="flex items-center gap-1">

@@ -35,6 +35,8 @@ export const HeroCarousel = ({categories}: HeroCarouselProps) => {
     if (heroNewsData) setHeroNews(heroNewsData);
   }, [heroNewsData]);
 
+  const breakingText = language === 'uz' ? 'Tezkor Xabar' : 'Тезкор Хабар';
+
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentSlide(prev => (prev + 1) % heroNews.length);
@@ -67,7 +69,7 @@ export const HeroCarousel = ({categories}: HeroCarouselProps) => {
             <Badge variant="secondary" className="bg-white/90 text-black">
               {language === 'uz' ? categories.find(cat => cat.id === current.category_id)?.name_uz : categories.find(cat => cat.id === current.category_id)?.name_kr || ""}
             </Badge>
-            {current.isBreaking && <Badge className="bg-breaking text-white">Tezkor Xabar</Badge>}
+            {current.isBreaking && <Badge className="bg-breaking text-white">{breakingText}</Badge>}
           </div>
           <h1 className="text-2xl md:text-5xl font-bold text-white mb-4 text-balance mx-0">
             {language === 'uz' ? current.title_uz : current.title_kr || current.title_uz}

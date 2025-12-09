@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { NewsCard } from "@/components/news/NewsCard";
 import { fetchNewsBySlug, fetchRelatedNews, likeArticle, unlikeArticle } from "@/data/fetchData";
-import { ArrowLeft, Heart, Eye, Clock, Share2 } from "lucide-react";
+import { ArrowLeft, Heart, Eye, Clock, Share2, ChevronLeft, ChevronRight, X } from "lucide-react";
 import { useLikes } from "@/hooks/useLikes";
 import { format} from "date-fns";
 import { uz, uzCyrl } from "date-fns/locale";
@@ -24,6 +24,10 @@ const SingleNews = () => {
   const [relatedNews, setRelatedNews] = useState<any[]>([])
   const liked = isLiked(article?.id);
   const [copied, setCopied] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [selectedImage, setSelectedImage] = useState<number | null>(null);
+  const [imagesLoaded, setImagesLoaded] = useState({});
+  const [autoScroll, setAutoScroll] = useState(true);
   // const localDate = new Date(article.date);
   //   localDate.setHours(localDate.getHours() + 5);
   const texts = {
@@ -63,7 +67,20 @@ const SingleNews = () => {
       setLoading(false);
     };
     fetchData();
+    setCurrentImageIndex(0);
+    setAutoScroll(true);
   }, [day, month, year, slug]);
+
+  // Auto-scroll carousel
+  useEffect(() => {
+    if (!autoScroll || !article?.images || article.images.length <= 1) return;
+
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prev) => (prev === article.images.length - 1 ? 0 : prev + 1));
+    }, 4000); // Auto-scroll every 4 seconds
+
+    return () => clearInterval(interval);
+  }, [autoScroll, article?.images]);
 
   if (!article && !loading) {
     return (
@@ -146,8 +163,10 @@ const SingleNews = () => {
     return (
       <MainLayout>
         <article className="container mx-auto px-4 py-6 max-w-4xl">
+          {/* Back Button Skeleton */}
           <Skeleton className="h-9 w-24 mb-6" />
           
+          {/* Article Header Skeleton */}
           <div className="mb-6">
             <div className="flex items-center gap-2 mb-4">
               <Skeleton className="h-6 w-20" />
@@ -168,19 +187,24 @@ const SingleNews = () => {
             </div>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-4 mb-6">
-            <Skeleton className="h-64 w-full rounded-lg" />
-            <Skeleton className="h-64 w-full rounded-lg" />
-          </div>
+          {/* Images Carousel Skeleton */}
+          <Skeleton className="aspect-video mb-6 rounded-lg" />
 
+          {/* Content Text Skeleton */}
           <div className="space-y-3 mb-8">
             <Skeleton className="h-4 w-full" />
             <Skeleton className="h-4 w-full" />
             <Skeleton className="h-4 w-5/6" />
             <Skeleton className="h-4 w-full" />
             <Skeleton className="h-4 w-4/5" />
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-3/4" />
           </div>
 
+          {/* Video Skeleton */}
+          <Skeleton className="aspect-video mb-6 rounded-lg" />
+
+          {/* Hashtags Skeleton */}
           <div className="flex flex-wrap gap-2 mb-8">
             <Skeleton className="h-6 w-20" />
             <Skeleton className="h-6 w-24" />
@@ -285,16 +309,134 @@ const SingleNews = () => {
           </div>
         </div>
 
-        {/* Article Images */}
-        <div className="grid md:grid-cols-2 gap-4 mb-6">
-          {article.images.map((image, index) => (
+        {/* Article Images Carousel */}
+        <div className="mb-6">
+          <div className="relative bg-gray-200 rounded-lg overflow-hidden aspect-video">
+            {/* Peek of previous image */}
+            {article.images.length > 1 && (
+              <div className="absolute inset-0 flex items-center">
+                <img
+                  src={article.images[currentImageIndex === 0 ? article.images.length - 1 : currentImageIndex - 1]}
+                  alt="Previous"
+                  className="absolute left-0 h-full w-1/4 object-cover opacity-30"
+                />
+              </div>
+            )}
+            
+            {!imagesLoaded[currentImageIndex] && (
+              <div className="absolute inset-0 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 animate-pulse z-10" />
+            )}
             <img
-              key={index}
-              src={image}
-              alt={`${article.title} - ${index + 1}`}
-              className="w-full h-64 object-cover rounded-lg"
+              src={article.images[currentImageIndex]}
+              alt={`${article.title} - ${currentImageIndex + 1}`}
+              className={`relative w-full h-full object-cover cursor-pointer transition-opacity duration-300 z-20 ${
+                imagesLoaded[currentImageIndex] ? 'opacity-100' : 'opacity-0'
+              }`}
+              loading="lazy"
+              onLoad={() => setImagesLoaded((prev: any) => ({ ...prev, [currentImageIndex]: true }))}
+              onError={() => setImagesLoaded((prev: any) => ({ ...prev, [currentImageIndex]: true }))}
+              onClick={() => setSelectedImage(currentImageIndex)}
             />
-          ))}
+            
+            {/* Peek of next image */}
+            {article.images.length > 1 && (
+              <div className="absolute inset-0 flex items-center">
+                <img
+                  src={article.images[currentImageIndex === article.images.length - 1 ? 0 : currentImageIndex + 1]}
+                  alt="Next"
+                  className="absolute right-0 h-full w-1/4 object-cover opacity-30"
+                />
+              </div>
+            )}
+            
+            {article.images.length > 1 && (
+              <>
+                <button
+                  onClick={() => {
+                    setAutoScroll(false);
+                    setCurrentImageIndex((prev) => (prev === 0 ? article.images.length - 1 : prev - 1));
+                  }}
+                  className="absolute left-2 top-1/2 -translate-y-1/2 z-20 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-colors"
+                >
+                  <ChevronLeft className="h-6 w-6" />
+                </button>
+                <button
+                  onClick={() => {
+                    setAutoScroll(false);
+                    setCurrentImageIndex((prev) => (prev === article.images.length - 1 ? 0 : prev + 1));
+                  }}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 z-20 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-colors"
+                >
+                  <ChevronRight className="h-6 w-6" />
+                </button>
+                <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-20 flex gap-1">
+                  {article.images.map((_: any, index: number) => (
+                    <button
+                      key={index}
+                      onClick={() => {
+                        setAutoScroll(false);
+                        setCurrentImageIndex(index);
+                      }}
+                      className={`h-2 rounded-full transition-all ${
+                        index === currentImageIndex ? 'bg-white w-6' : 'bg-white/50 w-2 hover:bg-white/75'
+                      }`}
+                    />
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* Image Lightbox */}
+        {selectedImage !== null && (
+          <div
+            className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4"
+            onClick={() => setSelectedImage(null)}
+          >
+            <div className="relative max-w-4xl max-h-[90vh] w-full h-full flex items-center justify-center" onClick={(e) => e.stopPropagation()}>
+              <img
+                src={article.images[selectedImage]}
+                alt={`${article.title} - ${selectedImage + 1}`}
+                className="max-w-full max-h-full object-contain"
+              />
+              <button
+                onClick={() => setSelectedImage(null)}
+                className="absolute top-4 right-4 bg-white/90 hover:bg-white text-black p-2 rounded-full transition-colors"
+              >
+                <X className="h-6 w-6" />
+              </button>
+              {article.images.length > 1 && (
+                <>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelectedImage((prev) => (prev === 0 ? article.images.length - 1 : prev - 1));
+                    }}
+                    className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-black p-2 rounded-full transition-colors"
+                  >
+                    <ChevronLeft className="h-6 w-6" />
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelectedImage((prev) => (prev === article.images.length - 1 ? 0 : prev + 1));
+                    }}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-black p-2 rounded-full transition-colors"
+                  >
+                    <ChevronRight className="h-6 w-6" />
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Article Content */}
+        <div className="mb-6">
+          <p className="whitespace-pre-line">
+          {language === 'uz' ? article.content_uz : article.content_kr}
+          </p>
         </div>
 
         {/* Video */}
@@ -308,13 +450,6 @@ const SingleNews = () => {
             />
           </div>
         )}
-
-        {/* Article Content */}
-        <div className="mb-6">
-          <p className="whitespace-pre-line">
-          {language === 'uz' ? article.content_uz : article.content_kr}
-          </p>
-        </div>
 
         {/* Hashtags */}
         <div className="flex flex-wrap gap-2 mb-8">
