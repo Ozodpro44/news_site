@@ -18,7 +18,7 @@ export const AdvertisementCard = ({ ad, language }: AdvertisementCardProps) => {
       className="block group relative overflow-hidden rounded-lg bg-white shadow-md hover:shadow-lg transition-all duration-300 border border-gray-100"
     >
       {ad.image_url && (
-        <div className="relative h-40 overflow-hidden bg-gray-200">
+        <div className="relative h-24 sm:h-32 md:h-40 overflow-hidden bg-gray-200">
           <img
             src={ad.image_url}
             alt={title}
@@ -28,17 +28,17 @@ export const AdvertisementCard = ({ ad, language }: AdvertisementCardProps) => {
         </div>
       )}
 
-      <div className="p-4">
-        <div className="flex items-start justify-between gap-2">
+      <div className="p-2 sm:p-3 md:p-4">
+        <div className="flex items-start justify-between gap-1 sm:gap-2">
           <div className="flex-1 min-w-0">
-            <h3 className="text-sm font-semibold text-gray-900 line-clamp-2 group-hover:text-primary transition-colors">
+            <h3 className="text-xs sm:text-sm md:text-base font-semibold text-gray-900 line-clamp-2 group-hover:text-primary transition-colors">
               {title}
             </h3>
             {description && (
-              <p className="text-xs text-gray-600 mt-1 line-clamp-2">{description}</p>
+              <p className="text-xs text-gray-600 mt-0.5 sm:mt-1 line-clamp-1 sm:line-clamp-2">{description}</p>
             )}
           </div>
-          <ExternalLink className="w-4 h-4 text-gray-400 group-hover:text-primary flex-shrink-0 mt-1 transition-colors" />
+          <ExternalLink className="w-3 h-3 sm:w-4 sm:h-4 text-gray-400 group-hover:text-primary flex-shrink-0 mt-0.5 sm:mt-1 transition-colors" />
         </div>
       </div>
 

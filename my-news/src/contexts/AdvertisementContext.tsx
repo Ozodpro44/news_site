@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { createContext, useContext, useEffect, useState, ReactNode, useCallback, useRef } from 'react';
 import { ApiAdvertisement, fetchActiveAdvertisements } from '@/data/fetchData';
 
 interface AdvertisementContextType {
@@ -12,7 +12,13 @@ const AdvertisementContext = createContext<AdvertisementContextType | undefined>
 export const AdvertisementProvider = ({ children }: { children: ReactNode }) => {
   const [advertisements, setAdvertisements] = useState<ApiAdvertisement[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [shownAds, setShownAds] = useState<Record<string, string>>({});
+  
+  // Track which ads have been recently shown per position (queue of 3 ads)
+  const shownAdsRef = useRef<Record<string, string[]>>({
+    top: [],
+    middle: [],
+    bottom: [],
+  });
 
   useEffect(() => {
     const loadAds = async () => {
@@ -31,30 +37,31 @@ export const AdvertisementProvider = ({ children }: { children: ReactNode }) => 
   }, []);
 
   // Get one random ad per position, avoiding recently shown ads
-  const getRandomAdByPosition = (position: 'top' | 'middle' | 'bottom'): ApiAdvertisement | null => {
-    const filtered = advertisements.filter(ad => ad.position === position);
-    if (filtered.length === 0) return null;
+  const getRandomAdByPosition = useCallback(
+    (position: 'top' | 'middle' | 'bottom'): ApiAdvertisement | null => {
+      const filtered = advertisements.filter(ad => ad.position === position);
+      if (filtered.length === 0) return null;
 
-    // Get the last shown ad for this position
-    const lastShownId = shownAds[position];
-    
-    // Find ads that are not the last shown one
-    const availableAds = filtered.filter(ad => ad.id !== lastShownId);
-    
-    // If all ads were shown, reset and use all ads
-    const adsToChooseFrom = availableAds.length > 0 ? availableAds : filtered;
-    
-    // Pick random ad
-    const randomAd = adsToChooseFrom[Math.floor(Math.random() * adsToChooseFrom.length)];
-    
-    // Mark this ad as shown for this position
-    setShownAds(prev => ({
-      ...prev,
-      [position]: randomAd.id
-    }));
-    
-    return randomAd;
-  };
+      // Get recently shown ads for this position
+      const recentlyShown = shownAdsRef.current[position] || [];
+      
+      // Find ads that are not in the recently shown list
+      const availableAds = filtered.filter(ad => !recentlyShown.includes(ad.id));
+      
+      // If all ads were shown recently, reset the list
+      const adsToChooseFrom = availableAds.length > 0 ? availableAds : filtered;
+      
+      // Pick random ad
+      const randomAd = adsToChooseFrom[Math.floor(Math.random() * adsToChooseFrom.length)];
+      
+      // Add to recently shown list and keep only last 3
+      const updated = [randomAd.id, ...recentlyShown].slice(0, 3);
+      shownAdsRef.current[position] = updated;
+      
+      return randomAd;
+    },
+    [advertisements]
+  );
 
   const value: AdvertisementContextType = {
     allAdvertisements: advertisements,
