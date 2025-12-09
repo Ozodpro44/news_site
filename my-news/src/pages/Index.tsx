@@ -7,6 +7,7 @@ import { CurrencyWidget } from "@/components/home/CurrencyWidget";
 import { HashtagBar } from "@/components/home/HashtagBar";
 import { AdBlock } from "@/components/home/AdBlock";
 import { Footer } from "@/components/Footer";
+import { AdvertisementSection } from "@/components/AdvertisementSection";
 import { Skeleton } from "@/components/ui/skeleton";
 import { fetchNews, fetchWeather, NewsArticle} from "@/data/fetchData";
 import { Link, useLocation } from "react-router-dom";
@@ -177,16 +178,23 @@ const Index = () => {
     <MainLayout>
       <div className="container mx-auto px-4 py-6 space-y-8">
         {/* Hero Carousel */}
-        <HeroCarousel categories={categories} />
+          <HeroCarousel categories={categories} />
 
-        {/* Weather & Currency */}
-        <div className="grid md:grid-cols-2 gap-4">
-          <WeatherWidget data={weatherData}/>
-          <CurrencyWidget />
-        </div>
+          {/* Weather & Currency */}
+          <div className="grid md:grid-cols-2 gap-4">
+            <WeatherWidget data={weatherData}/>
+            <CurrencyWidget />
+          </div>
 
-        {/* Trending Hashtags */}
-        <HashtagBar />
+          {/* Trending Hashtags & Top Advertisements */}
+          <div className="grid md:grid-cols-3 gap-6">
+            <div className="md:col-span-2">
+              <HashtagBar />
+            </div>
+            <div>
+              <AdvertisementSection position="top" language={language} />
+            </div>
+          </div>
 
         {/* Latest News */}
         <section>
@@ -203,6 +211,9 @@ const Index = () => {
           </div>
         </section>
 
+        {/* Middle Advertisements */}
+        <AdvertisementSection position="middle" language={language} />
+
         {/* Ad Block */}
         {/* <AdBlock variant="horizontal" /> */}
 
@@ -215,6 +226,9 @@ const Index = () => {
             ))}
           </div>
         </section>
+
+        {/* Bottom Advertisements */}
+        <AdvertisementSection position="bottom" language={language} />
 
         <Footer categories={categories}/>
       </div>

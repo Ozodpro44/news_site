@@ -520,5 +520,69 @@ export async function fetchCurrency(): Promise<GetCurrency> {
   return currency;
 }
 
+// Advertisement types and functions
+export type ApiAdvertisement = {
+  id: string;
+  title_uz: string;
+  title_kr: string;
+  description_uz: string;
+  description_kr: string;
+  image_url?: string;
+  link_url: string;
+  is_active: boolean;
+  start_date: string;
+  end_date: string;
+  position: 'top' | 'middle' | 'bottom';
+  created_at?: string;
+  updated_at?: string;
+};
+
+export async function fetchActiveAdvertisements(): Promise<ApiAdvertisement[]> {
+  const cacheKey = 'advertisements_active';
+  
+  // Check cache first
+  const cached = getCache<ApiAdvertisement[]>(cacheKey);
+  if (cached) {
+    console.log('📦 Using cached active advertisements');
+    return cached;
+  }
+
+  try {
+    const ads = await request<ApiAdvertisement[]>(`/viewer/advertisements/active`);
+    
+    // Cache the result with shorter duration (5 minutes)
+    setCache(cacheKey, ads, 5 * 60 * 1000);
+    
+    return ads;
+  } catch (err) {
+    console.error('Failed to fetch advertisements', err);
+    return [];
+  }
+}
+
+export async function fetchAdvertisementsByPosition(position: 'top' | 'middle' | 'bottom'): Promise<ApiAdvertisement[]> {
+  const cacheKey = `advertisements_${position}`;
+  
+  // Check cache first
+  const cached = getCache<ApiAdvertisement[]>(cacheKey);
+  if (cached) {
+    console.log(`📦 Using cached ${position} advertisements`);
+    return cached;
+  }
+
+  try {
+    const all = await fetchActiveAdvertisements();
+    const filtered = all.filter(ad => ad.position === position);
+    
+    // Cache the result
+    setCache(cacheKey, filtered, 5 * 60 * 1000);
+    
+    return filtered;
+  } catch (err) {
+    console.error(`Failed to fetch ${position} advertisements`, err);
+    return [];
+  }
+}
+
 export { translateWeatherCondition };
 

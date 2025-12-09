@@ -6,6 +6,7 @@ import { Skeleton } from "@/components/ui/skeleton"; // Keep Skeleton import
 import { NewsCard } from "@/components/news/NewsCard";
 import { Badge } from "@/components/ui/badge";
 import { search } from "@/data/fetchData";
+import { AdvertisementSection } from "@/components/AdvertisementSection";
 import { Search as SearchIcon, X, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/contexts/ThemeContext";
@@ -183,17 +184,24 @@ const Search = () => {
                 </div>
               </div>
             ) : searchResults.length > 0 ? (
-              // Results found
-              <div>
-                <p className="text-muted-foreground mb-6">
-                  {searchResults.length} {t.searchResults} "{query}" {t.for}
-                </p>
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {searchResults.map((article) => (
-                    <NewsCard key={article.id} article={article} />
-                  ))}
-                </div>
-              </div>
+               // Results found
+               <div>
+                 <p className="text-muted-foreground mb-6">
+                   {searchResults.length} {t.searchResults} "{query}" {t.for}
+                 </p>
+
+                 {/* Top Advertisements */}
+                 <AdvertisementSection position="top" language={language} />
+
+                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                   {searchResults.map((article) => (
+                     <NewsCard key={article.id} article={article} />
+                   ))}
+                 </div>
+
+                 {/* Bottom Advertisements */}
+                 <AdvertisementSection position="bottom" language={language} />
+               </div>
             ) : (
               // No results found
               <div className="text-center py-12">

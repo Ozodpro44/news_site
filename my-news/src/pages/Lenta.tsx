@@ -4,6 +4,7 @@ import { NewsCard } from "@/components/news/NewsCard";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { fetchLenta, NewsArticle} from "@/data/fetchData";
+import { AdvertisementSection } from "@/components/AdvertisementSection";
 import { SlidersHorizontal } from "lucide-react";
 import { useTheme } from "@/contexts/ThemeContext";
 
@@ -117,12 +118,18 @@ const Lenta = () => {
           </div>
         ) : (
           <>
+            {/* Top Advertisements */}
+            <AdvertisementSection position="top" language={language} />
+
             {/* News Feed */}
             <div className="grid md:grid-cols-2 gap-6">
               {news.map((article) => (
                 <NewsCard key={article.id} article={article} variant="horizontal" />
               ))}
             </div>
+
+            {/* Middle Advertisements */}
+            <AdvertisementSection position="middle" language={language} />
 
             {/* Load More */}
             <div className="text-center mt-8">
@@ -132,6 +139,9 @@ const Lenta = () => {
                 </Button>
               )}
             </div>
+
+            {/* Bottom Advertisements */}
+            <AdvertisementSection position="bottom" language={language} />
           </>
         )}
 

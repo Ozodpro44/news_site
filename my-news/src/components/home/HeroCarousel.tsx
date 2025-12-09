@@ -14,26 +14,26 @@ interface HeroCarouselProps {
 }
 
 export const HeroCarousel = ({categories}: HeroCarouselProps) => {
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const [heroNews, setHeroNews] = useState<NewsArticle[]>([]);
-  const { language } = useTheme();
-  
-  const { data: heroNewsData } = useQuery({
-    queryKey: ['heroNews'],
-    queryFn: async () => {
-        const [breaking, trending] = await Promise.all([
-          fetchBreakingNews(3),
-          fetchTrendingNews(2)
-        ]);
-      return [...breaking, ...trending].slice(0, 5);
-    },
-    staleTime: 1000 * 60 * 5, // 5 minutes
-    gcTime: 1000 * 60 * 10, // 10 minutes
-  });
+   const [currentSlide, setCurrentSlide] = useState(0);
+   const [heroNews, setHeroNews] = useState<NewsArticle[]>([]);
+   const { language } = useTheme();
+   
+   const { data: heroNewsData } = useQuery({
+     queryKey: ['heroNews'],
+     queryFn: async () => {
+         const [breaking, trending] = await Promise.all([
+           fetchBreakingNews(3),
+           fetchTrendingNews(2)
+         ]);
+       return [...breaking, ...trending].slice(0, 5);
+     },
+     staleTime: 1000 * 60 * 5, // 5 minutes
+     gcTime: 1000 * 60 * 10, // 10 minutes
+   });
 
-  useEffect(() => {
-    if (heroNewsData) setHeroNews(heroNewsData);
-  }, [heroNewsData]);
+   useEffect(() => {
+     if (heroNewsData) setHeroNews(heroNewsData);
+   }, [heroNewsData]);
 
   const breakingText = language === 'uz' ? 'Tezkor Xabar' : 'Тезкор Хабар';
 
@@ -53,8 +53,8 @@ export const HeroCarousel = ({categories}: HeroCarouselProps) => {
     setCurrentSlide(prev => (prev + 1) % heroNews.length);
   };
   if (heroNews.length === 0) return (<Skeleton className="w-full h-[400px] md:h-[600px] rounded-2xl" />);
-  const current = heroNews[currentSlide];
-  return <div className="relative w-full h-[400px] md:h-[600px] overflow-hidden rounded-2xl bg-muted">
+   const current = heroNews[currentSlide];
+   return <div className="relative w-full h-[400px] md:h-[600px] overflow-hidden rounded-2xl bg-muted">
       {/* Background Image with Overlay */}
       <div className="absolute inset-0 bg-cover bg-center transition-all duration-700" style={{
       backgroundImage: `url(${current.preview || current.images[0]})`

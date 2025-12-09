@@ -5,6 +5,7 @@ import { NewsCard} from "@/components/news/NewsCard";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { NewsArticle, ApiCategory, fetchNewsByCategory, useCategories } from "@/data/fetchData";
+import { AdvertisementSection } from "@/components/AdvertisementSection";
 import { ArrowLeft } from "lucide-react";
 import { useTheme } from "@/contexts/ThemeContext";
 
@@ -105,18 +106,26 @@ const CategoryDetail = () => {
         <h1 className="text-3xl font-bold mb-8">{category ? (language === 'uz' ? category.name_uz : category.name_kr) : ''}</h1>
 
         {(loading || categoriesLoading) ? (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[...Array(6)].map((_, i) => (
-              <Skeleton key={i} />
-            ))}
-          </div>
-        ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {categoryNews.map((article) => (
-              <NewsCard key={article.id} article={article} />
-            ))}
-          </div>
-        )}
+           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+             {[...Array(6)].map((_, i) => (
+               <Skeleton key={i} />
+             ))}
+           </div>
+         ) : (
+           <>
+             {/* Top Advertisements */}
+             <AdvertisementSection position="top" language={language} />
+
+             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+               {categoryNews.map((article) => (
+                 <NewsCard key={article.id} article={article} />
+               ))}
+             </div>
+
+             {/* Middle Advertisements */}
+             <AdvertisementSection position="middle" language={language} />
+           </>
+         )}
 
         {categoryNews.length === 0 && !loading && (
           <div className="text-center text-muted-foreground py-12">
@@ -131,6 +140,9 @@ const CategoryDetail = () => {
             </Button>
           </div>
         )}
+
+        {/* Bottom Advertisements */}
+        <AdvertisementSection position="bottom" language={language} />
       </div>
     </MainLayout>
   );

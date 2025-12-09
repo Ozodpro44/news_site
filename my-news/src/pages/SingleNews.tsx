@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { NewsCard } from "@/components/news/NewsCard";
 import { fetchNewsBySlug, fetchRelatedNews, likeArticle, unlikeArticle } from "@/data/fetchData";
+import { AdvertisementSection } from "@/components/AdvertisementSection";
 import { ArrowLeft, Heart, Eye, Clock, Share2, ChevronLeft, ChevronRight, X } from "lucide-react";
 import { useLikes } from "@/hooks/useLikes";
 import { format} from "date-fns";
@@ -462,10 +463,8 @@ const SingleNews = () => {
           ))}
         </div>
 
-        {/* Ad */}
-        {/* <div className="mb-12">
-          <AdBlock variant="horizontal" />
-        </div> */}
+        {/* Middle Advertisements */}
+        <AdvertisementSection position="middle" language={language} />
 
         {/* Recommended News */}
         {relatedNews.length > 0 && (
@@ -478,6 +477,9 @@ const SingleNews = () => {
             </div>
           </section>
         )}
+
+        {/* Bottom Advertisements */}
+        <AdvertisementSection position="bottom" language={language} />
       </article>
     </MainLayout>
   );
