@@ -8,7 +8,7 @@ import { useLikes } from "@/hooks/useLikes";
 import { formatDistanceToNow } from "date-fns";
 import { uz } from "date-fns/locale";
 
-export const NewsCard = ({ article, variant = "default" }) => {
+export const NewsCard = ({ article, variant = "default", language = 'uz' }) => {
   const { isLiked, toggleLike } = useLikes();
   const liked = isLiked(article.id);
 
@@ -16,6 +16,8 @@ export const NewsCard = ({ article, variant = "default" }) => {
     addSuffix: true,
     locale: uz,
   });
+
+  const breakingText = language === 'uz' ? 'Tezkor' : 'Тезкор';
 
   if (variant === "horizontal") {
     return (
@@ -30,10 +32,10 @@ export const NewsCard = ({ article, variant = "default" }) => {
           </Link>
           <div className="p-4 sm:w-2/3 flex flex-col">
             <div className="flex items-center gap-2 mb-2">
-              <Badge variant="secondary">{article.category}</Badge>
-              {article.isBreaking && (
-                <Badge className="bg-breaking text-white">Tezkor</Badge>
-              )}
+                <Badge variant="secondary">{article.category}</Badge>
+                {article.isBreaking && (
+                  <Badge className="bg-breaking text-white">{breakingText}</Badge>
+                )}
             </div>
             <Link to={`/news/${article.id}`}>
               <h3 className="text-lg font-semibold mb-2 hover:text-primary transition-colors line-clamp-2">
@@ -126,7 +128,7 @@ export const NewsCard = ({ article, variant = "default" }) => {
           />
           {article.isBreaking && (
             <Badge className="absolute top-3 right-3 bg-breaking text-white">
-              Tezkor
+              {breakingText}
             </Badge>
           )}
         </div>
